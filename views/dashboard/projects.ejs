@@ -1,0 +1,254 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Projects</h1>
+</div>
+<button id="createButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal">Buat
+  Project Baru</button>
+<div id="project"></div>
+
+<!-- Trigger the modal with a button -->
+
+
+<!-- Modal -->
+<div id="projectModal" class="modal fade" role="form">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Modal Header</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="projectModalForm">
+          <input type="hidden" name="id" id="id">
+          <div class="form-group">
+            <label for="projectName">Project Name</label>
+            <input type="text" class="form-control" id="projectName" name="projectName" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="type">Type</label>
+            <input type="text" class="form-control" id="type" name="type" required>
+          </div>
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input type="date" class="form-control" id="startDate" name="startDate" required>
+          </div>
+          <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input type="date" class="form-control" id="endDate" name="endDate" required>
+          </div>
+          <div class="form-group">
+            <label for="budget">Total Biaya yang Dibutuhkan (Rp)</label>
+            <input type="number" min="1" class="form-control" id="budget" name="budget" required>
+          </div>
+          <div class="form-group">
+            <label for="budget"><s>Gambar Cover</s> <sup style="color: blue;">coming soon</sup></label>
+            <input type="file" class="form-control" id="image" name="image" disabled>
+          </div>
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status">
+              <option value="planning">Planning</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+              <option value="onhold">On Hold</option>
+            </select>
+          </div>
+          <button id="submitForm" type="submit" class="btn btn-primary">Buat Projek</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- table -->
+<script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+<script>
+  new gridjs.Grid({
+    columns: ["Nama Projek", "Tipe", "Biaya", "Status", "Tanggal Dibuat", "Aksi"],
+    server: {
+      url: '/api/project/user',
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      then: data => data.map(project => [
+        project.name,
+        project.type,
+        new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR'
+        }).format(project.budget),
+        project.status,
+        new Date(project.createdAt).toLocaleDateString('id-ID'),
+        gridjs.html(`
+        <button id="edit" onclick="editProjectModal(${project.id})" class="btn btn-sm btn-warning">
+          <i class="fas fa-edit"></i> edit
+        </button>
+        `)
+      ]),
+      handle: (res) => {
+        if (!res.ok) {
+          throw Error('Fetch failed');
+        }
+        return res.json();
+      }
+    },
+    search: true,
+    pagination: {
+      limit: 10,
+      enabled: true,
+      summary: true
+    },
+    language: {
+      'search': {
+        'placeholder': '🔍 Search...'
+      },
+      'pagination': {
+        'showing': 'Menampilkan',
+        'to': 'sampai',
+        'of': 'dari',
+        'results': 'Data'
+      }
+    },
+    style: {
+      td: {
+        border: '1px solid #ccc',
+        padding: '10px'
+      },
+      table: {
+        'font-size': '15px',
+        width: '100%'
+      }
+    }
+  }).render(document.getElementById("project"));
+</script>
+
+<!-- form handle submit -->
+<script>
+  // Tambahkan event listener untuk menangani form submit
+  document.getElementById('projectModal').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const projectName = document.getElementById('projectName').value;
+    const description = document.getElementById('description').value;
+    const type = document.getElementById('type').value
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const budget = document.getElementById('budget').value;
+    const status = document.getElementById('status').value;
+    let api, word;
+
+    try {
+      const id = document.getElementById("id").value;
+      if (!id) {
+        // Create new project
+        api = '/api/project/create';
+        word = 'Dibuat';
+      } else {
+        // Edit existing project
+        api = `/api/project/${id}`;
+        word = 'Diperbarui';
+      }
+
+      // Send data to API using Axios
+      const method = id ? 'put' : 'post';
+      const response = await axios[method](api, {
+        name: projectName,
+        description,
+        start_date: startDate,
+        end_date: endDate,
+        budget,
+        status,
+        type
+      });
+
+      // Handle successful response
+      console.log(response);
+      Swal.fire({
+        icon: 'success',
+        title: `Projek Berhasil ${word}`,
+        text: response.data.message,
+      }).then(() => {
+        window.location.reload()
+      });
+    } catch (error) {
+      console.log(error.response.data)
+      // Tangani error dari server
+      if (error.response) {
+        Swal.fire({
+          icon: 'error',
+          title: `Projek Gagal ${word}`,
+          text: error.response.data.message || 'Kesalahan tidak diketahui.',
+        });
+      } else {
+        // Tangani error jaringan
+        Swal.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan',
+          text: 'Tidak dapat terhubung ke server.',
+        });
+      }
+    }
+  });
+
+</script>
+
+<script>
+  //create button
+  document.getElementById('createButton').addEventListener('click', async (e) => {
+    document.getElementsByClassName('modal-title')[0].textContent = 'Buat Project Baru'
+    document.getElementById('submitForm').textContent = 'Buat Project'
+    document.getElementById('id').value = ""
+    document.getElementById('projectName').value = "";
+    document.getElementById('description').value = "";
+    document.getElementById('type').value = "";
+    document.getElementById('startDate').value = "";
+    document.getElementById('endDate').value = "";
+    document.getElementById('budget').value = "";
+    document.getElementById('status').value = "";
+  })
+
+  const editProjectModal = async (id) => {
+    try {
+      // Fetch project data from API
+      const response = await axios.get(`/api/project/${id}`);
+      const project = response.data;
+      console.log(response)
+
+      // Show modal and set title
+      $('#projectModal').modal('show');
+      $('.modal-title').text('Ubah Data Project');
+      $('#submitForm').text('Ubah Project')
+
+      // Fill form fields with project data
+      document.getElementById('projectName').value = project.name;
+      document.getElementById('description').value = project.description;
+      document.getElementById('type').value = project.type;
+      document.getElementById('startDate').value = project.start_date.split('T')[0];
+      document.getElementById('endDate').value = project.end_date.split('T')[0];
+      document.getElementById('budget').value = project.budget;
+      document.getElementById('status').value = project.status;
+
+      // Store project ID in hidden field or data attribute
+      document.getElementById('id').value = id;
+
+    } catch (error) {
+      console.error('Error fetching project:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Gagal mengambil data project',
+      });
+    }
+  };
+</script>

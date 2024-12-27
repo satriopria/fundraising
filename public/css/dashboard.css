@@ -1,0 +1,11 @@
+.bg-gradient-primary {
+    background: linear-gradient(#424242, #212121) !important;
+}
+
+.gridjs-search {
+    float: right
+}
+
+.gridjs-search input {
+    width: 120px;
+}
