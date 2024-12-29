@@ -1,4 +1,6 @@
 const Project = require('../models/Project');
+const Finance = require('../models/Finance');
+const { Op, sequelize } = require('sequelize');
 
 // Create a new project
 const createProject = async (req, res) => {
@@ -28,7 +30,7 @@ const createProject = async (req, res) => {
 // Get all projects
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.findAll();
+    const projects = await Project.findAll({ attributes: ['id', 'name', 'description'] });
     res.status(200).json(projects);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
@@ -37,21 +39,51 @@ const getAllProjects = async (req, res) => {
 
 // Get all user projects
 const getAllUserProjects = async (req, res) => {
-    try {
-      const projects = await Project.findAll({where: {user_id: req.user.id}});
-      if(!projects) return res.status(404).json({message: 'Project not found', api: req.user.id});
-      res.status(200).json(projects);
-    } catch (err) {
-      res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
+  try {
+    const projects = await Project.findAll({ where: { user_id: req.user.id }, order: [['id', 'DESC']] });
+    if (!projects) return res.status(404).json({ message: 'Project not found', api: req.user.id });
+    res.status(200).json(projects);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
+  }
+};
+
+// Get a single project by ID
+const searchProject = async (req, res) => {
+  try {
+    const { name } = req.body;
+    let projects;
+    if (name=='') {
+      projects = await Project.findAll();
+    } else {
+      projects = await Project.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${name}%`
+          }
+        }
+      });
     }
-  };
+
+    
+
+    console.log('Found projects:', projects); // Tambahkan log ini
+    res.json(projects);
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error searching projects'
+    });
+  }
+};
 
 // Get a single project by ID
 const getProjectById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const project = await Project.findByPk(id, {where: {user_id: req.user.id}});
+    const project = await Project.findByPk(id);
     if (!project) return res.status(404).json({ error: 'Project not found' });
 
     res.status(200).json(project);
@@ -66,11 +98,11 @@ const updateProject = async (req, res) => {
   const { name, description, type, budget, start_date, end_date, status, user_id } = req.body;
 
   try {
-    const project = await Project.findByPk(id, {where: {user_id: req.user.id}});
+    const project = await Project.findByPk(id, { where: { user_id: req.user.id } });
     if (!project) return res.status(404).json({ error: 'Project not found' })
 
-    await project.update({ 
-        name, description, type, budget, start_date, end_date, status, user_id: req.user.id 
+    await project.update({
+      name, description, type, budget, start_date, end_date, status, user_id: req.user.id
     });
 
     res.status(200).json({
@@ -87,7 +119,7 @@ const deleteProject = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const project = await Project.findByPk(id, {where: {user_id: req.user.id}});
+    const project = await Project.findByPk(id, { where: { user_id: req.user.id } });
     if (!project) res.status(404).json({ error: 'Project not found' });
 
     await project.destroy();
@@ -98,4 +130,4 @@ const deleteProject = async (req, res) => {
   }
 };
 
-module.exports = { createProject, getAllProjects, getAllUserProjects, getProjectById, updateProject, deleteProject };
+module.exports = { createProject, getAllProjects, getAllUserProjects, getProjectById, updateProject, deleteProject, searchProject };

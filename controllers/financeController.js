@@ -1,4 +1,28 @@
 const Finance = require('../models/Finance');
+// Get total collected donations for a project
+const getCollectedDonations = async (req, res) => {
+    const { project_id } = req.params;
+    try {
+        const totalDonations = await Finance.sum('amount', {
+            where: {
+                project_id: project_id,
+                type: 'donation',
+                status: 'completed'
+            }
+        });
+
+        res.status(200).json({
+            project_id: project_id,
+            total_donations: totalDonations || 0
+        });
+    } catch (err) {
+        res.status(500).json({ 
+            error: 'Failed to get total donations',
+            details: err.message 
+        });
+    }
+}
+
 
 //create finance
 const createFinance = async (req, res) => {
@@ -70,4 +94,4 @@ const deleteFinance = async (req, res) => {
     }
 }
 
-module.exports = { createFinance, getAllFinanceOfProject, getFinanceById, updateFinance, deleteFinance };
+module.exports = { createFinance, getAllFinanceOfProject, getFinanceById, updateFinance, deleteFinance, getCollectedDonations };

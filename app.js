@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const financeRoutes = require('./routes/financeRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const viewRoutes = require('./routes/viewRoutes');
+const paymentRoutes = require('./routes/paymentRoutes')
 const expressEjsLayouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser')
 
@@ -40,6 +41,7 @@ app.use((err, req, res, next) => {
 app.use('/api/users', userRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/project', projectRoutes);
+app.use('/api/payment', paymentRoutes);
 app.use('/api', (req, res) => {
   res.send('Hello World');
 });
@@ -48,7 +50,7 @@ app.use('/api', (req, res) => {
 app.use('/', viewRoutes);
 
 // Jalankan server
-sequelize.sync({alter:true}).then(() => {
+sequelize.sync({sync:true}).then(() => {
   app.listen(PORT, () => {
     console.log(`Server is running on localhost:${PORT}`);
   })

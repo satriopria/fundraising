@@ -1,0 +1,139 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800"><%- title %></h1>
+</div>
+<!-- Pending Donations Section -->
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">All Donations</h6>
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addDonationModal">
+      <i class="fas fa-plus"></i> Add Donation
+    </button>
+  </div>
+  <div class="card-body">
+    <div id="allDonations"></div>
+  </div>
+</div>
+
+<!-- Add Donation Modal -->
+<div class="modal fade" id="addDonationModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Donation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="addDonationForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Donor Name</label>
+            <input type="text" class="form-control" name="donorName" required>
+          </div>
+          <div class="form-group">
+            <label>Project</label>
+            <select class="form-control" name="projectId" required>
+              <!-- Will be populated dynamically -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" class="form-control" name="amount" required>
+          </div>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select class="form-control" name="paymentMethodId" required>
+              <!-- Will be populated dynamically -->
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add Donation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- All Transactions Section
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">All Transactions</h6>
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addTransactionModal">
+        <i class="fas fa-plus"></i> Add Donation
+      </button>
+  </div>
+  <div class="card-body">
+    <div id="allTransactions"></div>
+  </div>
+</div> -->
+
+<script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+<script>
+
+  // All Donations Table
+  new gridjs.Grid({
+    columns: ["Donor", "Project", "Amount", "Date", "Status"],
+    server: {
+      url: '/api/donation/all',
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      then: data => data.map(donation => [
+        donation.donorName,
+        donation.projectName,
+        new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR'
+        }).format(donation.amount),
+        new Date(donation.createdAt).toLocaleDateString('id-ID'),
+        donation.status
+      ])
+    },
+    search: true,
+    pagination: {
+      limit: 10
+    },
+    style: {
+      table: {
+        'font-size': '14px',
+        width: '100%'
+      }
+    }
+  }).render(document.getElementById("allDonations"));
+
+  // All Transactions Table
+  new gridjs.Grid({
+    columns: ["Type", "Description", "Amount", "Date", "Category"],
+    server: {
+      url: '/api/transaction/all',
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      then: data => data.map(transaction => [
+        transaction.type,
+        transaction.description,
+        new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR'
+        }).format(transaction.amount),
+        new Date(transaction.createdAt).toLocaleDateString('id-ID'),
+        transaction.category
+      ])
+    },
+    search: true,
+    pagination: {
+      limit: 10
+    },
+    style: {
+      table: {
+        'font-size': '14px',
+        width: '100%'
+      }
+    }
+  }).render(document.getElementById("allTransactions"));
+</script>

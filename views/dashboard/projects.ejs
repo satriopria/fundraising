@@ -73,7 +73,7 @@
 <!-- table -->
 <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
 <script>
-  new gridjs.Grid({
+  const grid = new gridjs.Grid({
     columns: ["Nama Projek", "Tipe", "Biaya", "Status", "Tanggal Dibuat", "Aksi"],
     server: {
       url: '/api/project/user',
@@ -107,7 +107,7 @@
     pagination: {
       limit: 10,
       enabled: true,
-      summary: true
+      summary: false
     },
     language: {
       'search': {
@@ -179,7 +179,7 @@
         title: `Projek Berhasil ${word}`,
         text: response.data.message,
       }).then(() => {
-        window.location.reload()
+        grid.forceRender();
       });
     } catch (error) {
       console.log(error.response.data)
