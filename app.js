@@ -50,7 +50,7 @@ app.use('/api', (req, res) => {
 app.use('/', viewRoutes);
 
 // Jalankan server
-sequelize.sync({sync:true}).then(() => {
+sequelize.sync({alter:true}).then(() => {
   app.listen(PORT, () => {
     console.log(`Server is running on localhost:${PORT}`);
   })

@@ -26,10 +26,10 @@ const getCollectedDonations = async (req, res) => {
 
 //create finance
 const createFinance = async (req, res) => {
-    const { transaction_name, project_id, type, data, amount, status } = req.body;
+    const { transaction_name, project_id, name, email, phone, type, data, amount, status } = req.body;
     try {
         const finance = await Finance.create({ 
-            transaction_name, project_id, type, data, amount, status
+            transaction_name, project_id, type, data, amount, status: "pending", name, email, phone
         });
         res.status(201).json(finance);
     } catch (err) {

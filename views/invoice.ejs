@@ -1,0 +1,23 @@
+<div class="container">
+    <h2>Invoice Donasi</h2>
+    <p>Jumlah Donasi: Rp <span id="donationAmount"></span></p>
+    <button id="confirmDonation" class="btn btn-success">Konfirmasi Donasi</button>
+  </div>
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const invoiceId = window.location.pathname.split('/').pop(); // Ambil ID dari URL
+  
+    // Ambil detail donasi dari server
+    const response = await axios.get(`/api/donations/${invoiceId}`);
+    const donation = response.data;
+  
+    document.getElementById('donationAmount').innerText = donation.amount;
+  
+    document.getElementById('confirmDonation').addEventListener('click', async () => {
+      await axios.post(`/api/donations/${invoiceId}/confirm`);
+      alert('Donasi berhasil dikonfirmasi!');
+      window.location.href = '/thank-you'; // Redirect ke halaman terima kasih
+    });
+  });
+  </script>

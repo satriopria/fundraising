@@ -30,6 +30,18 @@ const Finance = sequelize.define('Finance', {
     status: {
         type: DataTypes.ENUM('pending', 'approved', 'cancelled'),
         allowNull: false
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     timestamps: true
