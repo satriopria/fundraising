@@ -1,5 +1,4 @@
 const PaymentMethod = require('../models/PaymentMethod');
-const midtransCLient = require('midtrans-client')
 
 // Create new payment method
 const createPaymentMethod = async (req, res) => {
@@ -147,60 +146,60 @@ const deletePaymentMethod = async (req, res) => {
 
 
 
-const midtransTransaction = async (req, res) => {
-  let snap = new midtransCLient.Snap({
-    isProduction: false,
-    serverKey: process.env.MIDTRANS_SERVER_KEY,
-    clientKey: process.env.MIDTRANS_CLIENT_KEY,
-  })
+// const midtransTransaction = async (req, res) => {
+//   let snap = new midtransCLient.Snap({
+//     isProduction: false,
+//     serverKey: process.env.MIDTRANS_SERVER_KEY,
+//     clientKey: process.env.MIDTRANS_CLIENT_KEY,
+//   })
 
-  let parameter = {
-    "transaction_details": {
-      "order_id": "test-snap-transaction-123",
-      "gross-amount": 200000
-    },
-    "item_details": [{
-      "id": "ITEM1",
-      "price": 10000,
-      "quantity": 20,
-      "name": "Midtrans Bear",
-      "brand": "Midtrans",
-      "category": "Toys",
-      "merchant_name": "Midtrans",
-      "url": "http://toko/toko1?item=abc"
-    }],
-    "customer_details": {
-      "first_name": "TEST",
-      "last_name": "MIDTRANSER",
-      "email": "test@midtrans.com",
-      "phone": "+628123456",
-      "billing_address": {
-        "first_name": "TEST",
-        "last_name": "MIDTRANSER",
-        "email": "test@midtrans.com",
-        "phone": "081 2233 44-55",
-        "address": "Sudirman",
-        "city": "Jakarta",
-        "postal_code": "12190",
-        "country_code": "IDN"
-      },
-      "shipping_address": {
-        "first_name": "TEST",
-        "last_name": "MIDTRANSER",
-        "email": "test@midtrans.com",
-        "phone": "0 8128-75 7-9338",
-        "address": "Sudirman",
-        "city": "Jakarta",
-        "postal_code": "12190",
-        "country_code": "IDN"
-      }
-    },
-  }
+//   let parameter = {
+//     "transaction_details": {
+//       "order_id": "test-snap-transaction-123",
+//       "gross-amount": 200000
+//     },
+//     "item_details": [{
+//       "id": "ITEM1",
+//       "price": 10000,
+//       "quantity": 20,
+//       "name": "Midtrans Bear",
+//       "brand": "Midtrans",
+//       "category": "Toys",
+//       "merchant_name": "Midtrans",
+//       "url": "http://toko/toko1?item=abc"
+//     }],
+//     "customer_details": {
+//       "first_name": "TEST",
+//       "last_name": "MIDTRANSER",
+//       "email": "test@midtrans.com",
+//       "phone": "+628123456",
+//       "billing_address": {
+//         "first_name": "TEST",
+//         "last_name": "MIDTRANSER",
+//         "email": "test@midtrans.com",
+//         "phone": "081 2233 44-55",
+//         "address": "Sudirman",
+//         "city": "Jakarta",
+//         "postal_code": "12190",
+//         "country_code": "IDN"
+//       },
+//       "shipping_address": {
+//         "first_name": "TEST",
+//         "last_name": "MIDTRANSER",
+//         "email": "test@midtrans.com",
+//         "phone": "0 8128-75 7-9338",
+//         "address": "Sudirman",
+//         "city": "Jakarta",
+//         "postal_code": "12190",
+//         "country_code": "IDN"
+//       }
+//     },
+//   }
 
-  snap.createTransactionToken(parameter)
-  .then((transactionToken) => {
-    console.log('transactionToken:', transactionToken)
-  })
-}
+//   snap.createTransactionToken(parameter)
+//   .then((transactionToken) => {
+//     console.log('transactionToken:', transactionToken)
+//   })
+// }
 
-module.exports = { midtransTransaction, getUserListPayment, createPaymentMethod, deletePaymentMethod, getPaymentMethodById, getUserPaymentMethods, updatePaymentMethod }
+module.exports = { getUserListPayment, createPaymentMethod, deletePaymentMethod, getPaymentMethodById, getUserPaymentMethods, updatePaymentMethod }

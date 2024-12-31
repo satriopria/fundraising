@@ -6,9 +6,9 @@
 <!-- Payment Methods Section -->
 <div class="card shadow mb-4">
   <div class="card-header py-3 d-flex justify-content-between align-items-center">
-    <h6 class="m-0 font-weight-bold text-primary">Payment Methods</h6>
+    <h6 class="m-0 font-weight-bold text-primary">Metode Pembayaran</h6>
     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addPaymentMethodModal">
-      <i class="fas fa-plus"></i> Add Payment Method
+      <i class="fas fa-plus"></i> Tambah Metode Pembayaran
     </button>
   </div>
   <div class="card-body">
@@ -21,7 +21,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add Payment Method</h5>
+        <h5 class="modal-title">Tambah Metode Pembayaran</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -29,28 +29,29 @@
       <form id="addPaymentMethodForm">
         <div class="modal-body">
           <div class="form-group">
-            <label>Type</label>
+            <label>Tipe</label>
             <select class="form-control" name="type" required>
               <option value="bank">Bank Transfer</option>
               <option value="e-wallet">E-Wallet</option>
             </select>
           </div>
           <div class="form-group">
-            <label>Provider Name</label>
+            <label>Nama Provider</label>
             <input type="text" class="form-control" name="provider" placeholder="e.g. BCA, GoPay, etc" required>
           </div>
           <div class="form-group">
-            <label>Account Number</label>
-            <input type="text" class="form-control" name="accountNumber" placeholder="Account/Phone Number" required>
+            <label>Nomor Rekening</label>
+            <input type="text" class="form-control" name="accountNumber" placeholder="Masukkan nomor rekening" required>
           </div>
           <div class="form-group">
-            <label>Account Name</label>
-            <input type="text" class="form-control" name="accountName" placeholder="Account Holder Name" required>
+            <label>Atas Nama Rekening</label>
+            <input type="text" class="form-control" name="accountName" placeholder="Masukkan nama pemilik rekening"
+              required>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batalkan</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
         </div>
       </form>
     </div>
@@ -62,7 +63,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Edit Payment Method</h5>
+        <h5 class="modal-title">Ubah Metode Pembayaran</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -71,28 +72,28 @@
         <input type="hidden" name="id">
         <div class="modal-body">
           <div class="form-group">
-            <label>Type</label>
+            <label>Tipe</label>
             <select class="form-control" name="type" required>
               <option value="bank">Bank Transfer</option>
               <option value="ewallet">E-Wallet</option>
             </select>
           </div>
           <div class="form-group">
-            <label>Provider Name</label>
+            <label>Nama Provider</label>
             <input type="text" class="form-control" name="provider" required>
           </div>
           <div class="form-group">
-            <label>Account Number</label>
+            <label>Nomor Rekening</label>
             <input type="text" class="form-control" name="accountNumber" required>
           </div>
           <div class="form-group">
-            <label>Account Name</label>
+            <label>Atas Nama Rekening</label>
             <input type="text" class="form-control" name="accountName" required>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Update</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batalkan</button>
+          <button type="submit" class="btn btn-primary">Ubah</button>
         </div>
       </form>
     </div>
@@ -104,10 +105,10 @@
   // Payment Methods Table
   const grid = new gridjs.Grid({
     columns: [
-      "Type",
+      "Tipe",
       "Provider",
-      "Account Number",
-      "Account Name",
+      "Nomor Rekening",
+      "Pemilik Rekening",
       {
         name: 'Actions',
         formatter: (cell, row) => {
@@ -142,14 +143,20 @@
     },
     search: true,
     pagination: {
-      limit: 5
+      limit: 5,
+      summary: false
     },
     style: {
       table: {
         'font-size': '14px',
         width: '100%'
       }
-    }
+    },
+    language: {
+      'search': {
+        'placeholder': '🔍 Cari...'
+      }
+    },
   }).render(document.getElementById("paymentMethods"));
 
   // Add Payment Method

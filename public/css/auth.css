@@ -1,5 +1,5 @@
 html {
-    height: 100%;
+    min-height: 100vh;
 }
 body {
     height: 100%;
@@ -185,7 +185,7 @@ body {
     max-width: 400px;
     z-index: 100;
     margin: 0 auto;
-    padding-top: 100px;
+    padding-top: 50px;
 }
 .login.login-container {
     width: 300px;

@@ -1,25 +1,25 @@
 <span id="message" class="text-danger"></span>
 <form id="registerForm" class="margin-t">
   <div class="form-group">
-    <input id="username" name="username" type="text" class="form-control" placeholder="username">
+    <input id="username" name="username" type="text" class="form-control" placeholder="nama pengguna">
   </div>
   <div class="form-group">
     <input id="email" name="email" type="email" class="form-control" placeholder="email">
   </div>
   <div class="form-group">
-    <input id="phone" name="phone" type="text" class="form-control" placeholder="phone">
+    <input id="phone" name="phone" type="text" class="form-control" placeholder="nomor handphone">
   </div>
   <div class="form-group">
     <input id="password" name="password" type="password" class="form-control" placeholder="password">
   </div>
   <div class="form-group">
     <input id="password-confirmation" name="password-confirmation" type="password" class="form-control"
-      placeholder="password confirmation">
+      placeholder="konfirmasi password">
   </div>
-  <button type="submit" class="form-button button-l margin-b">Register</button>
+  <button type="submit" class="form-button button-l margin-b">Daftar</button>
 
-  <p class="text-whitesmoke text-center"><small>Have an account?</small></p>
-  <a class="text-darkyellow" href="/login"><small>Sign In</small></a>
+  <p class="text-whitesmoke text-center"><small>Sudah punya akun?</small></p>
+  <a class="text-darkyellow" href="/login"><small>Masuk</small></a>
 </form>
 
 <script>
@@ -37,12 +37,12 @@
     msg.textContent = "";
 
     if (password !== passwordConf) {
-      document.getElementById("message").textContent = "password confirmation tidak sesuai!";
+      document.getElementById("message").textContent = "konfirmasi password tidak sesuai!";
       return;
     }
 
     if (!username || !phone || !email || !password) {
-      document.getElementById("message").textContent = "username, phone, email, dan password harus diisi!";
+      document.getElementById("message").textContent = "nama pengguna, nomor handphone, email, dan password harus diisi!";
       return;
     }
 

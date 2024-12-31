@@ -4,35 +4,35 @@ const router = express.Router();
 
 router.get('/login', (req, res) => {
     res.render('auth/login', {
-        title: "login",
+        title: "masuk akun",
         layout: "auth/authTemplate"
     });
 });
 
 router.get('/register', (req, res) => {
     res.render('auth/register', {
-        title: "register",
+        title: "pendaftaran akun",
         layout: "auth/authTemplate"
     });
 });
 
 router.get('/forgot-password', (req, res) => {
     res.render('auth/forgotPassword', {
-        title: "forgot password",
+        title: "lupa password",
         layout: "auth/authTemplate"
     });
 });
 
 router.get('/dashboard', verifyToken, (req, res) => {
     res.render('dashboard/index', {
-        title: "dashboard",
+        title: "Dashboard",
         layout: "dashboard/dashboardTemplate",
     });
 });
 
 router.get('/projects', verifyToken, (req, res) => {
     res.render('dashboard/projects', {
-        title: "projects",
+        title: "Projek",
         layout: "dashboard/dashboardTemplate",
         userId: req.user.id
     });
@@ -40,7 +40,7 @@ router.get('/projects', verifyToken, (req, res) => {
 
 router.get('/finances', verifyToken, (req, res) => {
     res.render('dashboard/finances', {
-        title: "finances",
+        title: "Keuangan",
         layout: "dashboard/dashboardTemplate",
         userId: req.user.id
     });
@@ -48,7 +48,7 @@ router.get('/finances', verifyToken, (req, res) => {
 
 router.get('/setting', verifyToken, (req, res) => {
     res.render('dashboard/settings', {
-        title: "setting",
+        title: "Pengaturan",
         layout: "dashboard/dashboardTemplate",
         userId: req.user.id
     });

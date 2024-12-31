@@ -1,6 +1,6 @@
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-  <h1 class="h3 mb-0 text-gray-800">Projects</h1>
+  <h1 class="h3 mb-0 text-gray-800"><%- title %></h1>
 </div>
 <button id="createButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal">Buat
   Project Baru</button>
@@ -23,23 +23,23 @@
         <form id="projectModalForm">
           <input type="hidden" name="id" id="id">
           <div class="form-group">
-            <label for="projectName">Project Name</label>
+            <label for="projectName">Nama Projek</label>
             <input type="text" class="form-control" id="projectName" name="projectName" required>
           </div>
           <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description">Deskripsi</label>
             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
           </div>
           <div class="form-group">
-            <label for="type">Type</label>
+            <label for="type">Tipe</label>
             <input type="text" class="form-control" id="type" name="type" required>
           </div>
           <div class="form-group">
-            <label for="startDate">Start Date</label>
+            <label for="startDate">Tanggal Mulai</label>
             <input type="date" class="form-control" id="startDate" name="startDate" required>
           </div>
           <div class="form-group">
-            <label for="endDate">End Date</label>
+            <label for="endDate">Tanggal Selesai</label>
             <input type="date" class="form-control" id="endDate" name="endDate" required>
           </div>
           <div class="form-group">
@@ -53,17 +53,17 @@
           <div class="form-group">
             <label for="status">Status</label>
             <select class="form-control" id="status" name="status">
-              <option value="planning">Planning</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="completed">Completed</option>
-              <option value="onhold">On Hold</option>
+              <option value="planning">Perencanaan</option>
+              <option value="ongoing">Sedang Berjalan</option>
+              <option value="completed">Sudah Selesai</option>
+              <option value="onhold">Ditunda</option>
             </select>
           </div>
           <button id="submitForm" type="submit" class="btn btn-primary">Buat Projek</button>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batalkan</button>
       </div>
     </div>
 
@@ -111,13 +111,7 @@
     },
     language: {
       'search': {
-        'placeholder': '🔍 Search...'
-      },
-      'pagination': {
-        'showing': 'Menampilkan',
-        'to': 'sampai',
-        'of': 'dari',
-        'results': 'Data'
+        'placeholder': '🔍 Cari...'
       }
     },
     style: {
@@ -178,9 +172,11 @@
         icon: 'success',
         title: `Projek Berhasil ${word}`,
         text: response.data.message,
-      }).then(() => {
-        grid.forceRender();
-      });
+      })
+
+      $('#projectModal').modal('hide');
+      e.target.reset();
+      grid.forceRender();
     } catch (error) {
       console.log(error.response.data)
       // Tangani error dari server
