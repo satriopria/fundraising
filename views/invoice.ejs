@@ -1,8 +1,17 @@
 <div class="container">
     <h2>Invoice Donasi</h2>
-    <p>Jumlah Donasi: Rp <span id="donationAmount"></span></p>
+    <p>Jumlah Donasi: Rp <span id="donationAmount"></span> <button class="btn btn-outline-primary" onclick="copyText('donationAmount')">Salin</button></p>
+    <p>Rekening Tujuan: <span id="accountNumber"></span> <button class="btn btn-outline-primary" onclick="copyText('accountNumber')">Salin</button></p>
+    <p>Harap klik tombol konfirmasi setelah Anda menyelesaikan donasi.</p>
     <button id="confirmDonation" class="btn btn-success">Konfirmasi Donasi</button>
-  </div>
+</div>
+<script>
+  function copyText(elementId) {
+    const element = document.getElementById(elementId);
+    navigator.clipboard.writeText(element.innerText);
+    alert('Teks berhasil disalin!');
+  }
+</script>
   
   <script>
   document.addEventListener('DOMContentLoaded', async () => {
@@ -12,7 +21,7 @@
     const response = await axios.get(`/api/donations/${invoiceId}`);
     const donation = response.data;
   
-    document.getElementById('donationAmount').innerText = donation.amount;
+    document.getElementById('donationAmount').innerText = donation.amount || "Rp 100.000";
   
     document.getElementById('confirmDonation').addEventListener('click', async () => {
       await axios.post(`/api/donations/${invoiceId}/confirm`);

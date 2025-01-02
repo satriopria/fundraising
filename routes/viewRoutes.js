@@ -96,5 +96,13 @@ router.get('/project-detail/:id', async (req, res) => {
     })
 })
 
+router.get('/invoice/:id', async (req, res) => {
+    res.render('invoice', {
+        title: "Invoice",
+        layout: "indexLayout",
+    })
+    
+})
+
 
 module.exports = router;

@@ -26,12 +26,12 @@ const getCollectedDonations = async (req, res) => {
 
 //create finance
 const createFinance = async (req, res) => {
-    const { transaction_name, project_id, name, email, phone, type, data, amount, status } = req.body;
+    const { transaction_name, project_id, name, email, phone, data, amount, status } = req.body;
     try {
         const finance = await Finance.create({ 
-            transaction_name, project_id, type, data, amount, status: "pending", name, email, phone
+            transaction_name, project_id, type:"income", data, amount, status: "pending", name, email, phone
         });
-        res.status(201).json(finance);
+        res.status(200).json(finance);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
