@@ -2,14 +2,16 @@
   <div class="row">
     <!-- Thumbnail -->
     <div class="col-md-6">
-      <img src="<%= projectDetail.thumbnail || '/img/default_image.png' %>" class="img-fluid rounded" alt="<%= projectDetail.name %>">
+      <img src="<%= projectDetail.thumbnail || '/img/default_image.png' %>" class="img-fluid rounded"
+        alt="<%= projectDetail.name %>">
     </div>
     <!-- Donation Modal -->
     <div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="donationModalLabel">Donasi untuk <%= projectDetail.name %></h5>
+            <h5 class="modal-title" id="donationModalLabel">Donasi untuk <%= projectDetail.name %>
+            </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -21,7 +23,8 @@
               </div>
               <div class="mb-3">
                 <label for="donateEmail" class="form-label">Email (Opsional)</label>
-                <input type="email" class="form-control" id="donorEmail" name="donorEmail" placeholder="example@example.com">
+                <input type="email" class="form-control" id="donorEmail" name="donorEmail"
+                  placeholder="example@example.com">
               </div>
               <div class="mb-3">
                 <label for="donatePhone" class="form-label">Nomor Handphone (Opsional)</label>
@@ -32,10 +35,14 @@
               <div class="mb-3">
                 <label class="form-label">Pilih Nominal Donasi</label>
                 <div class="d-flex flex-wrap gap-2">
-                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="10000">Rp 10.000</button>
-                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="50000">Rp 50.000</button>
-                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="100000">Rp 100.000</button>
-                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="500000">Rp 500.000</button>
+                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="10000">Rp
+                    10.000</button>
+                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="50000">Rp
+                    50.000</button>
+                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="100000">Rp
+                    100.000</button>
+                  <button type="button" class="btn btn-outline-primary donation-preset" data-amount="500000">Rp
+                    500.000</button>
                 </div>
               </div>
 
@@ -53,9 +60,12 @@
                 <label class="form-label">Metode Pembayaran</label>
                 <select class="form-select" id="paymentMethod" name="paymentMethod" required>
                   <option value="">Pilih metode pembayaran...</option>
-                  <% paymentMethod.forEach(method => { %>
-                    <option value="<%= method.id %>"> <%= method.account_number %> <%= method.provider %> - a/n <%= method.account_name %></option>
-                  <% }); %>
+                  <% paymentMethod.forEach(method=> { %>
+                    <option value="<%= method.id %>">
+                      <%= method.account_number %>
+                        <%= method.provider %> - a/n <%= method.account_name %>
+                    </option>
+                    <% }); %>
                 </select>
               </div>
 
@@ -74,7 +84,8 @@
       <p>
         <%= projectDetail.description %>
       </p>
-      <h4 class="text-primary">Target Donasi: Rp <%= projectDetail.budget.toLocaleString('id-ID') %>
+      <h4 class="text-primary">Target Donasi: <%= new Intl.NumberFormat('id-ID', { style: 'currency' ,
+          currency: 'IDR' }).format(projectDetail.budget) %>
       </h4>
       <h5 class="text-success">Terkumpul: Rp <%= collectedDonation.toLocaleString('id-ID') || '0' %>
       </h5>
@@ -88,28 +99,28 @@
 
 <script>
   // Update donation button to trigger modal
-  document.querySelector('a[href^="/donate/"]').addEventListener('click', function(e) {
+  document.querySelector('a[href^="/donate/"]').addEventListener('click', function (e) {
     e.preventDefault();
     new bootstrap.Modal(document.getElementById('donationModal')).show();
   });
 
   // Handle preset donation amounts
   document.querySelectorAll('.donation-preset').forEach(button => {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function () {
       document.getElementById('customAmount').value = this.dataset.amount;
     });
   });
 
   // Handle donation form submission
-  document.getElementById('donationForm').addEventListener('submit', async function(e) {
+  document.getElementById('donationForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     const amount = document.getElementById('customAmount').value;
     const paymentMethod = document.getElementById('paymentMethod').value;
     const name = document.getElementById('donorName').value;
     const email = document.getElementById('donorEmail').value;
     const phone = document.getElementById('donorPhone').value;
-    
+
     if (!amount || amount < 1000) {
       alert('Minimal donasi Rp 1.000');
       return;

@@ -40,4 +40,8 @@ const User = sequelize.define('User', {
     timestamps: true
 });
 
+// User.associate = function (models) {
+//     User.hasMany(models.Project, {as: 'projects'})
+// }
+
 module.exports = User;

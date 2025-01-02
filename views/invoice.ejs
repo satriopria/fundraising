@@ -1,9 +1,33 @@
-<div class="container">
-    <h2>Invoice Donasi</h2>
-    <p>Jumlah Donasi: Rp <span id="donationAmount"></span> <button class="btn btn-outline-primary" onclick="copyText('donationAmount')">Salin</button></p>
-    <p>Rekening Tujuan: <span id="accountNumber"></span> <button class="btn btn-outline-primary" onclick="copyText('accountNumber')">Salin</button></p>
-    <p>Harap klik tombol konfirmasi setelah Anda menyelesaikan donasi.</p>
-    <button id="confirmDonation" class="btn btn-success">Konfirmasi Donasi</button>
+<div class="container text-center py-5">
+    <h2 class="pb-3">Invoice Donasi</h2>
+    <div class="mb-3">
+        <h4>Nama Donatur:</h4>
+        <div id="donorName" class="mb-2"></div>
+    </div>
+    <div class="mb-3">
+        <h4>Email Donatur:</h4>
+        <div id="donorEmail" class="mb-2"></div>
+    </div>
+    <div class="mb-3">
+        <h4>Nomor Handphone Donatur:</h4>
+        <div id="donorPhone" class="mb-2"></div>
+    </div>
+    <div class="mb-3">
+        <h4>Jumlah Donasi:</h4>
+        <div id="donationAmount" class="mb-2"></div><span id="amount" hidden></span>
+        <button class="btn btn-outline-primary" onclick="copyText('amount')">Salin</button>
+    </div>
+    <div class="mb-3">
+        <h4>Rekening Tujuan:</h4>
+        <div id="accountBank" class="mb-2"></div>
+        <div id="accountName" class="mb-2"></div>
+        <div id="accountNumber"></div>
+        <button class="btn btn-outline-primary" onclick="copyText('accountNumber')">Salin</button>
+    </div>
+    <div class="mb-3">
+        <p>Harap klik tombol konfirmasi setelah Anda menyelesaikan donasi.</p>
+        <button id="confirmDonation" class="btn btn-success">Konfirmasi Donasi</button>
+    </div>
 </div>
 <script>
   function copyText(elementId) {
@@ -16,13 +40,26 @@
   <script>
   document.addEventListener('DOMContentLoaded', async () => {
     const invoiceId = window.location.pathname.split('/').pop(); // Ambil ID dari URL
-  
+    let response;
+
     // Ambil detail donasi dari server
-    const response = await axios.get(`/api/donations/${invoiceId}`);
+    response = await axios.get(`/api/finance/${invoiceId}`);
     const donation = response.data;
+
+    response = await axios.get(`/api/payment/${donation.data.payment_method_id}`);
+    const paymentMethod = response.data
   
-    document.getElementById('donationAmount').innerText = donation.amount || "Rp 100.000";
-  
+    document.getElementById('donationAmount').innerText = new Intl.NumberFormat('id-ID', { style: 'currency' ,
+    currency: 'IDR' }).format(donation.amount) || "0";
+    document.getElementById('amount').innerText = donation.amount || "0";
+    document.getElementById('accountName').innerText = `(a/n ${paymentMethod.account_name})`;
+    document.getElementById('accountNumber').innerText = `${paymentMethod.account_number}`;
+    document.getElementById('accountBank').innerText = `[${paymentMethod.provider}] `;
+
+    document.getElementById('donorName').innerText = donation.name;
+    document.getElementById('donorEmail').innerText = donation.email;
+    document.getElementById('donorPhone').innerText = donation.phone;
+
     document.getElementById('confirmDonation').addEventListener('click', async () => {
       await axios.post(`/api/donations/${invoiceId}/confirm`);
       alert('Donasi berhasil dikonfirmasi!');

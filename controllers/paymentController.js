@@ -61,12 +61,10 @@ const getUserListPayment = async (req, res) => {
 const getPaymentMethodById = async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.id;
 
     const paymentMethod = await PaymentMethod.findOne({
       where: {
         id,
-        user_id,
         is_active: true,
       }
     });

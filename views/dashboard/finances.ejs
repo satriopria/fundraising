@@ -75,10 +75,10 @@
 
   // All Donations Table
   new gridjs.Grid({
-    columns: ["Donor", "Project", "Amount", "Date", "Status"],
+    columns: ["Nama", "Email", "No Handphone", "Project", "Jumlah Donasi", "Tanggal", "Status", "Aksi"],
     server: {
-      url: '/api/donation/all',
-      method: 'GET',
+      url: '/api/finance/user',
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },

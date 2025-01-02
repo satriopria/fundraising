@@ -6,7 +6,7 @@ const { getUserListPayment, createPaymentMethod, deletePaymentMethod, getPayment
 router.post('/create', authenticateToken, createPaymentMethod); // Create payment method
 router.post('/user', authenticateToken, getUserPaymentMethods);
 router.get('/list/:user_id', getUserListPayment);
-router.get('/:id', authenticateToken, getPaymentMethodById);
+router.get('/:id', getPaymentMethodById);
 router.put('/:id', authenticateToken, updatePaymentMethod);
 router.delete('/:id', authenticateToken, deletePaymentMethod);
 
