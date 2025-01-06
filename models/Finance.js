@@ -29,7 +29,7 @@ const Finance = sequelize.define('Finance', {
         allowNull: false
     },
     status: {
-        type: DataTypes.ENUM('pending', 'approved', 'cancelled'),
+        type: DataTypes.ENUM('pending', 'confirmed', 'active', 'expired'),
         allowNull: false
     },
     name: {

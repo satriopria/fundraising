@@ -9,3 +9,18 @@
 .gridjs-search input {
     width: 120px;
 }
+
+/* @media (max-width: 768px) {
+    .sidebar {
+        width: 0;
+        overflow: hidden;
+        background: linear-gradient(#424242, #212121) !important;
+        z-index: 1040;
+    }
+
+    .sidebar.toggled {
+        width: 250px;
+        overflow: visible;
+        background: linear-gradient(#424242, #212121) !important;
+    }
+} */

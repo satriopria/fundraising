@@ -84,8 +84,8 @@
       <p>
         <%= projectDetail.description %>
       </p>
-      <h4 class="text-primary">Target Donasi: <%= new Intl.NumberFormat('id-ID', { style: 'currency' ,
-          currency: 'IDR' }).format(projectDetail.budget) %>
+      <h4 class="text-primary">Target Donasi: <%= new Intl.NumberFormat('id-ID', { style: 'currency' , currency: 'IDR'
+          }).format(projectDetail.budget) %>
       </h4>
       <h5 class="text-success">Terkumpul: Rp <%= collectedDonation.toLocaleString('id-ID') || '0' %>
       </h5>

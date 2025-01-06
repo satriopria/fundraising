@@ -27,6 +27,7 @@ router.get('/dashboard', verifyToken, (req, res) => {
     res.render('dashboard/index', {
         title: "Dashboard",
         layout: "dashboard/dashboardTemplate",
+        currentPath: req.path
     });
 });
 
@@ -34,15 +35,30 @@ router.get('/projects', verifyToken, (req, res) => {
     res.render('dashboard/projects', {
         title: "Projek",
         layout: "dashboard/dashboardTemplate",
-        userId: req.user.id
+        currentPath: req.path
     });
 });
 
-router.get('/finances', verifyToken, (req, res) => {
+router.get('/finances', verifyToken, async (req, res) => {
+    // let paymentMethods, projects;
+    // try {
+    //     const paymentResponse = await fetch(`${process.env.BASE_URL}/api/payment/user`, {method: "POST"});
+    //     paymentMethods = await paymentResponse.json();
+
+    //     const projectResponse = await fetch(`${process.env.BASE_URL}/api/project/user`, {method: "POST"});
+    //     projects = await projectResponse.json();
+    // } catch (error) {
+    //     console.error('Error fetching payment methods or projects:', error);
+    //     return res.status(500).send('Internal Server Error');
+    // }
+
     res.render('dashboard/finances', {
         title: "Keuangan",
         layout: "dashboard/dashboardTemplate",
-        userId: req.user.id
+        userId: req.user.id,
+        currentPath: req.path
+        // paymentMethods,
+        // projects
     });
 });
 
@@ -50,7 +66,7 @@ router.get('/setting', verifyToken, (req, res) => {
     res.render('dashboard/settings', {
         title: "Pengaturan",
         layout: "dashboard/dashboardTemplate",
-        userId: req.user.id
+        currentPath: req.path
     });
 });
 
