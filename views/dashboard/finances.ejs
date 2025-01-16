@@ -6,7 +6,7 @@
 <div class="card shadow mb-4">
   <div class="card-header py-3 d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
-      <h6 class="m-0 font-weight-bold text-primary">Semua Data Keuangan</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Data Keuangan</h6>
     </div>
     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addDonationModal">
       <i class="fas fa-plus"></i> Tambah
@@ -49,6 +49,10 @@
               <span class="input-group-text">Rp</span>
               <input type="number" class="form-control" name="amount" placeholder="0" min="1000">
             </div>
+          </div>
+          <div class="form-group">
+            <label>Bukti Transfer</label>
+            <input type="file" class="form-control" id="proofPath" name="proofPath" accept=".png, .jpg, .jpeg" required>
           </div>
 
           <div class="form-group">
@@ -97,10 +101,14 @@
       { name: "Email" },
       { name: "No Handphone" },
       { name: "Project" },
-      { name: "Jumlah Donasi"},
-      { name: "Tanggal"},
-      { name: "Status"},
-      { name: "Aksi"}
+      {
+        name: "Jumlah Donasi",
+        formatter: (cell) => gridjs.html(`${cell.line1}<br>${cell.line2}`)
+      },
+      { name: "Tanggal" },
+      { name: "Status" },
+      { name: "Bukti Transfer" },
+      { name: "Aksi" }
     ],
     server: {
       url: '/api/finance/user',
@@ -113,35 +121,39 @@
         donation.email ? donation.email : '-',
         donation.phone ? donation.phone : '-',
         donation.project_id,
-        new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR'
-        }).format(donation.amount),
+        {
+          line1: `${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(donation.amount)}`,
+          line2: `${donation.data.additional_need && donation.data.additional_need.length > 0 ? `(${donation.data.additional_need.map(item => `${item.name} - ${item.quantity} ${item.unit}`).join(', ')})` : ''}`,
+        },
         new Date(donation.createdAt).toLocaleDateString('id-ID') + ' ' + new Date(donation.createdAt).toLocaleTimeString(),
         gridjs.html(`<b><span style="text-transform: uppercase; color: ${donation.status === 'active' ? 'green' : (donation.status === 'pending' ? 'darkgrey' : (donation.status === 'expired' ? 'lightgrey' : 'orange'))};">${donation.status}</span></b>`),
+        donation.data.proofPath ? gridjs.html(`<a href="/${donation.data.proofPath}" target="_blank">Lihat</a>`) : '',
 
         gridjs.html(`
         ${donation.status !== 'active' && donation.status !== 'expired' ? `
-        <button id="confirm" onclick="confirmDonation('${donation.id}')" class="btn btn-sm btn-secondary">
-          <i class="fas fa-check"></i> Konfirmasi
+        <button id="confirm" onclick="confirmDonation('${donation.id}')" class="btn btn-sm btn-success">
+          <i class="fas fa-check"></i> konfirmasi
         </button>` : ''}
         `)
       ])
     },
     search: true,
+    sort: true,
     pagination: {
       limit: 10
     },
     style: {
       table: {
         'font-size': '14px',
-        width: '100%'
       }
     },
     language: {
       'search': {
         'placeholder': '🔍 Cari...'
-      }
+      },
+      empty: {
+        message: "Tidak ada data yang ditemukan", // Ubah pesan di sini
+      },
     },
   }).render(document.getElementById("allDonations"));
 </script>
@@ -150,10 +162,8 @@
 <script>
   // admin confirm
   async function confirmDonation(invoiceId) {
-    console.log('aljsdf')
+    let confirm = null
     try {
-      const confirm = await axios.post(`/api/finance/${invoiceId}/admin_confirm`);
-      console.log('Response:', confirm.data); // Debugging respons
       Swal.fire({
         title: "Apakah Anda yakin ingin melakukan konfirmasi data tersebut?",
         text: "Data akan dikonfirmasi dan aktif",
@@ -163,8 +173,9 @@
         cancelButtonColor: "#d33",
         confirmButtonText: "Konfirmasi",
         cancelButtonText: "Batal"
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
+          const confirm = await axios.post(`/api/finance/${invoiceId}/admin_confirm`);
           Swal.fire({
             title: "Data berhasil dikonfirmasi!",
             text: "",
@@ -193,6 +204,7 @@
       const amount = document.querySelector('input[name="amount"]').value;
       const projectId = document.getElementById('selectProject').value;
       const paymentMethodId = document.getElementById('selectPaymentMethod').value;
+      const proofPath = document.getElementById('proofPath').value || null;
 
       // Validasi input (contoh sederhana)
       if (!donorName || !amount || !projectId || !paymentMethodId) {
@@ -212,7 +224,8 @@
         amount,
         project_id: projectId,
         payment_method_id: paymentMethodId,
-        status: "active"
+        status: "active",
+        proofPath,
       });
 
       // Tampilkan notifikasi sukses

@@ -1,9 +1,50 @@
 <div class="container py-5">
   <div class="row">
     <!-- Thumbnail -->
-    <div class="col-md-6">
+    <div class="col mb-3">
       <img src="<%= projectDetail.thumbnail || '/img/default_image.png' %>" class="img-fluid rounded"
         alt="<%= projectDetail.name %>">
+      <div class="my-3 text-center">
+        <h4 class="text-primary">Periode Proyek</h4>
+        <h4>
+          <%= new Date(projectDetail.start_date).toLocaleDateString('id-ID') %> - <%= new
+              Date(projectDetail.end_date).toLocaleDateString('id-ID') %>
+        </h4>
+      </div>
+      <!-- Organizer Details -->
+  <div class="col mt-5">
+    <h4 class="text-center mb-4">Detail Penyelenggara</h3>
+    <div class="row-md-4 text-center">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5 class="card-title">Pengelola</h5>
+          <p class="card-text">
+            <%= organizer.username %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row-md-4 text-center">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5 class="card-title">Nomor Telepon</h5>
+          <p class="card-text">
+            <%= organizer.phone || 'Tidak tersedia' %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row-md-4 text-center">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5 class="card-title">Alamat</h5>
+          <p class="card-text">
+            <%= organizer.address || 'Tidak tersedia' %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
     </div>
     <!-- Donation Modal -->
     <div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
@@ -27,8 +68,9 @@
                   placeholder="example@example.com">
               </div>
               <div class="mb-3">
-                <label for="donatePhone" class="form-label">Nomor Handphone (Opsional)</label>
-                <input type="text" class="form-control" id="donorPhone" name="donorPhone" placeholder="081234567890">
+                <label for="donatePhone" class="form-label">Nomor Handphone</label>
+                <input type="text" class="form-control" id="donorPhone" name="donorPhone" placeholder="081234567890"
+                  required>
               </div>
 
               <!-- Preset Amounts -->
@@ -51,25 +93,35 @@
                 <label for="customAmount" class="form-label">Atau Masukkan Nominal Lain</label>
                 <div class="input-group">
                   <span class="input-group-text">Rp</span>
-                  <input type="number" class="form-control" id="customAmount" name="amount" placeholder="0" min="1000">
+                  <input type="number" class="form-control" id="customAmount" name="amount" placeholder="0">
                 </div>
               </div>
 
-              <!-- Payment Methods -->
-              <div class="mb-3">
-                <label class="form-label">Metode Pembayaran</label>
-                <select class="form-select" id="paymentMethod" name="paymentMethod" required>
-                  <option value="">Pilih metode pembayaran...</option>
-                  <% paymentMethod.forEach(method=> { %>
-                    <option value="<%= method.id %>">
-                      <%= method.account_number %>
-                        <%= method.provider %> - a/n <%= method.account_name %>
-                    </option>
-                    <% }); %>
-                </select>
-              </div>
 
-              <button type="submit" class="btn btn-primary w-100">Lanjutkan Donasi</button>
+              <% if(projectDetail.additional_need.length> 0) { %>
+                <div class="form-group">
+                  <button id="addDonationItem" type="button"
+                    class="mb-3 btn btn-sm btn-outline-success rounded-pill">Tambahkan
+                    Donasi Barang</button>
+                  <div id="things"></div>
+                </div>
+                <% } %>
+
+                  <!-- Payment Methods -->
+                  <div class="mb-3">
+                    <label class="form-label">Metode Pembayaran</label>
+                    <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+                      <option value="">Pilih metode pembayaran...</option>
+                      <% paymentMethod.forEach(method=> { %>
+                        <option value="<%= method.id %>">
+                          <%= method.account_number %>
+                            <%= method.provider %> - a/n <%= method.account_name %>
+                        </option>
+                        <% }); %>
+                    </select>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary w-100">Lanjutkan Donasi</button>
             </form>
           </div>
         </div>
@@ -77,25 +129,65 @@
     </div>
 
     <!-- Project Details -->
-    <div class="col-md-6">
+    <div class="col">
       <h1>
         <%= projectDetail.name %>
       </h1>
-      <p>
-        <%= projectDetail.description %>
-      </p>
-      <h4 class="text-primary">Target Donasi: <%= new Intl.NumberFormat('id-ID', { style: 'currency' , currency: 'IDR'
-          }).format(projectDetail.budget) %>
+      <div style="text-align: justify;"><%- projectDetail.description %></div>
+      <h4 class="text-primary">Target Donasi: Rp <%= projectDetail.budget.toLocaleString('id-ID') || '0' %>
       </h4>
-      <h5 class="text-success">Terkumpul: Rp <%= collectedDonation.toLocaleString('id-ID') || '0' %>
+      <h5 class="text-success">Terkumpul: Rp <%= collectedDonation.totalMoney.toLocaleString('id-ID') || '0' %>
       </h5>
-
-      <!-- Donation Button -->
-      <a href="/donate/<%= projectDetail.id %>" class="btn btn-primary btn-lg mt-3">Donasi Sekarang</a>
+      <div id="card-body">
+        <div class="progress mb-4" style="height: 20px;">
+          <div class="progress-bar bg-info" role="progressbar"
+            style="width: <%= collectedDonation.totalMoney / projectDetail.budget * 100%>%"
+            aria-valuenow="<%= collectedDonation.totalMoney / projectDetail.budget * 100%>%" aria-valuemin="0"
+            aria-valuemax="100">
+            <%= Math.round(collectedDonation.totalMoney / projectDetail.budget * 100) %>%
+          </div>
+        </div>
+      </div>
+      <% if(projectDetail.additional_need.length> 0) { %>
+        <h4 class="text-primary">Kebutuhan Barang Lain</h4>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nama Barang</th>
+                <th>Jumlah Kebutuhan</th>
+                <th>Jumlah Donasi Masuk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% projectDetail.additional_need.forEach((need)=> { %>
+                <tr>
+                  <td>
+                    <%= need.name %>
+                  </td>
+                  <td>
+                    <%= need.quantity %>
+                      <%= need.unit %>
+                  </td>
+                  <td>
+                    <%= collectedDonation.itemCounts[need.name] || 0 %>
+                      <%= need.unit %>
+                  </td>
+                </tr>
+                <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+          <!-- Donation Button -->
+          <a href="/donate/<%= projectDetail.id %>" class="btn btn-primary btn-lg mt-3">Donasi Sekarang</a>
     </div>
   </div>
-</div>
 
+  <hr class="my-5">
+
+  
+</div>
 
 <script>
   // Update donation button to trigger modal
@@ -121,10 +213,32 @@
     const email = document.getElementById('donorEmail').value;
     const phone = document.getElementById('donorPhone').value;
 
-    if (!amount || amount < 1000) {
-      alert('Minimal donasi Rp 1.000');
-      return;
+    //get things list
+    const donationItems = [];
+
+    document.querySelectorAll('select[name="itemName"]').forEach((item, index) => {
+      const quantity = parseInt(document.querySelectorAll('input[name="itemQty"]')[index].value);
+      const unit = item.options[item.selectedIndex].getAttribute('data-unit');
+      const existingItem = donationItems.find(donation => donation.name === item.value);
+
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        donationItems.push({ name: item.value, quantity, unit });
+      }
+    });
+    // const thingsData = JSON.stringify(donationItems);
+    // console.log(donationData);
+
+    //check money/&thing
+    if (!amount && donationItems.length === 0) {
+      e.preventDefault();
+      alert('Donasi harus berisi minimal satu dari uang atau barang.');
     }
+    // if (!amount || amount < 1000) {
+    //   alert('Minimal donasi Rp 1.000');
+    //   return;
+    // }
 
     try {
       const response = await fetch('/api/finance/create', {
@@ -135,8 +249,9 @@
         body: JSON.stringify({
           transaction_name: "online donation",
           project_id: '<%= projectDetail.id %>',
-          amount: parseInt(amount),
+          amount: parseInt(amount) || 0,
           payment_method_id: paymentMethod,
+          additional_need: donationItems,
           type: 'donation',
           status: 'pending',
           name,
@@ -157,4 +272,51 @@
       alert('Terjadi kesalahan saat memproses donasi');
     }
   });
+</script>
+
+<script>
+  const donationItemsContainer = document.getElementById('things');
+  const addDonationItemButton = document.getElementById('addDonationItem');
+  const donationForm = document.getElementById('donationForm');
+
+  const availableItems = JSON.parse(`<%- JSON.stringify(projectDetail.additional_need) %>`);
+
+  // console.log()
+  addDonationItemButton.addEventListener('click', () => {
+    const itemDiv = document.createElement('div');
+    itemDiv.classList.add('row', 'mb-3', 'align-items-center', 'donation-item');
+    itemDiv.innerHTML = `
+      <div class="col-6">
+        <select class="form-select" name="itemName" required>
+          <option value="">Pilih Barang...</option>
+          ${availableItems.map(item => `<option value="${item.name}" data-unit="${item.unit}">${item.name} (${item.unit})</option>`).join('')}
+        </select>
+      </div>
+      <div class="col-4">
+        <input type="number" class="form-control" name="itemQty" placeholder="Jumlah" min="1" required>
+      </div>
+      <div class="col-1 text-end">
+        <button type="button" class="btn btn-danger btn-sm remove-item">&times;</button>
+      </div>
+    `;
+
+    donationItemsContainer.appendChild(itemDiv);
+
+    // Event listener untuk tombol hapus
+    itemDiv.querySelector('.remove-item').addEventListener('click', () => {
+      itemDiv.remove();
+    });
+  });
+
+  // Validasi sebelum submit
+  donationForm.addEventListener('submit', (e) => {
+    const moneyDonation = document.getElementById('customAmount').value || document.querySelector('.donation-preset.active')?.dataset?.amount;
+    const itemDonations = document.querySelectorAll('.donation-item');
+
+    if (!moneyDonation && itemDonations.length === 0) {
+      e.preventDefault();
+      alert('Donasi harus berisi minimal satu dari uang atau barang.');
+    }
+  });
+
 </script>

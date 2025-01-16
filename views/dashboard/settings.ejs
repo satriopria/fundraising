@@ -75,7 +75,7 @@
             <label>Tipe</label>
             <select class="form-control" name="type" required>
               <option value="bank">Bank Transfer</option>
-              <option value="ewallet">E-Wallet</option>
+              <option value="e-wallet">E-Wallet</option>
             </select>
           </div>
           <div class="form-group">
@@ -155,7 +155,10 @@
     language: {
       'search': {
         'placeholder': '🔍 Cari...'
-      }
+      },
+      empty: {
+        message: "Tidak ada data yang ditemukan", // Ubah pesan di sini
+      },
     },
   }).render(document.getElementById("paymentMethods"));
 
@@ -262,23 +265,46 @@
 
   // Delete Payment Method
   async function deletePaymentMethod(id) {
-    if (confirm('Are you sure you want to delete this payment method?')) {
-      try {
-        const response = await axios.delete(`/api/payment/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
 
-        if (response.status === 200) {
-          grid.forceRender();
-        } else {
-          alert('Failed to delete payment method');
+    Swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: 'Anda tidak dapat mengembalikan metode pembayaran ini setelah dihapus!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`/api/payment/${id}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+
+          if (response.status === 200) {
+            Swal.fire({
+              title: 'Berhasil!',
+              text: 'Metode pembayaran berhasil dihapus.',
+              icon: 'success',
+            });
+            grid.forceRender();
+          } else {
+            Swal.fire({
+              title: 'Gagal!',
+              text: 'Gagal menghapus metode pembayaran.',
+              icon: 'error',
+            });
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire({
+            title: 'Terjadi Kesalahan!',
+            text: 'Ada masalah saat menghapus metode pembayaran.',
+            icon: 'error',
+          });
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred');
       }
-    }
+    })
   }
 </script>

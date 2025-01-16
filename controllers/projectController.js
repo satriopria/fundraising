@@ -4,7 +4,7 @@ const { Op, sequelize } = require('sequelize');
 
 // Create a new project
 const createProject = async (req, res) => {
-  const { name, description, type, budget, status, start_date, end_date } = req.body;
+  const { name, description, type, budget, start_date, end_date, start_subscription_date, end_subscription_date, additionalNeed} = req.body;
 
   try {
     const project = await Project.create({
@@ -12,10 +12,12 @@ const createProject = async (req, res) => {
       description,
       type,
       budget,
-      status,
       start_date,
       end_date,
-      user_id: req.user.id
+      start_subscription_date,
+      end_subscription_date,
+      user_id: req.user.id,
+      additional_need: additionalNeed
     });
 
     res.status(201).json({
@@ -30,7 +32,17 @@ const createProject = async (req, res) => {
 // Get all projects
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.findAll({ attributes: ['id', 'name', 'description'] });
+    const projects = await Project.findAll();
+    res.status(200).json(projects);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
+  }
+};
+
+// Get all projects
+const getActiveProjects = async (req, res) => {
+  try {
+    const projects = await Project.findAll({where: {status: 'active'}});
     res.status(200).json(projects);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
@@ -48,29 +60,36 @@ const getAllUserProjects = async (req, res) => {
   }
 };
 
+// Get all user projects
+const isExistUserProjects = async (req, res) => {
+  try {
+    const projects = await Project.findAll({limit: 1, where: { user_id: req.user.id }, attributes: ['id'] });
+    
+    res.status(200).json({ exist: projects.length ? true : false });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
+  }
+};
+
 // Get a single project by ID
 const searchProject = async (req, res) => {
   try {
     const { name } = req.body;
     let projects;
     if (name=='') {
-      projects = await Project.findAll();
+      projects = await Project.findAll({where:{status: 'active'}});
     } else {
       projects = await Project.findAll({
         where: {
           name: {
             [Op.like]: `%${name}%`
-          }
+          },
+          status: 'active'
         }
       });
     }
-
-    
-
-    console.log('Found projects:', projects); // Tambahkan log ini
     res.json(projects);
   } catch (error) {
-    console.error('Search error:', error);
     res.status(500).json({
       success: false,
       message: 'Error searching projects'
@@ -95,14 +114,15 @@ const getProjectById = async (req, res) => {
 // Update a project
 const updateProject = async (req, res) => {
   const { id } = req.params;
-  const { name, description, type, budget, start_date, end_date, status, user_id } = req.body;
+  const { name, description, type, budget, start_date, end_date, status, user_id, additionalNeed } = req.body;
 
   try {
     const project = await Project.findByPk(id, { where: { user_id: req.user.id } });
     if (!project) return res.status(404).json({ error: 'Project not found' })
 
     await project.update({
-      name, description, type, budget, start_date, end_date, status, user_id: req.user.id
+      name, description, type, budget, start_date, end_date, status, 
+      user_id: req.user.id, additional_need: additionalNeed
     });
 
     res.status(200).json({
@@ -130,4 +150,12 @@ const deleteProject = async (req, res) => {
   }
 };
 
-module.exports = { createProject, getAllProjects, getAllUserProjects, getProjectById, updateProject, deleteProject, searchProject };
+const confirmProject = async (req, res) => {
+  
+}
+
+const superadminConfirmProject = async (req, res) => {
+  
+}
+
+module.exports = { isExistUserProjects, getActiveProjects, superadminConfirmProject, confirmProject, createProject, getAllProjects, getAllUserProjects, getProjectById, updateProject, deleteProject, searchProject };

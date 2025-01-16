@@ -2,11 +2,31 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
   <h1 class="h3 mb-0 text-gray-800"><%- title %></h1>
 </div>
+<!-- 
 <button id="createButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal">Buat
-  Project Baru</button>
-<div id="project"></div>
+  Proyek Baru</button>
+<div id="project"></div> -->
+
+<!--  Donations Section -->
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">Data Proyek</h6>
+    </div>
+    <button class="btn btn-primary btn-sm" id="createButton" type="button" data-toggle="modal"
+      data-target="#projectModal">
+      <i class="fas fa-plus"></i> Tambah Proyek
+    </button>
+  </div>
+  <div class="card-body">
+    <div id="project"></div>
+  </div>
+</div>
 
 <!-- Trigger the modal with a button -->
+
+
+
 
 
 <!-- Modal -->
@@ -23,43 +43,57 @@
         <form id="projectModalForm">
           <input type="hidden" name="id" id="id">
           <div class="form-group">
-            <label for="projectName">Nama Projek</label>
+            <label for="projectName">Nama Proyek</label>
             <input type="text" class="form-control" id="projectName" name="projectName" required>
           </div>
           <div class="form-group">
             <label for="description">Deskripsi</label>
-            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            <div name="description" id="description"></div>
           </div>
           <div class="form-group">
-            <label for="type">Tipe</label>
-            <input type="text" class="form-control" id="type" name="type" required>
+            <div class="row g-3">
+              <div class="col">
+                <label for="type">Tipe</label>
+                <input type="text" class="form-control" id="type" name="type" required>
+              </div>
+              <div class="col">
+                <label for="budget">Jumlah Target (Rp)</label>
+                <input type="number" min="1" class="form-control" id="budget" name="budget" required>
+              </div>
+            </div>
           </div>
           <div class="form-group">
-            <label for="startDate">Tanggal Mulai</label>
-            <input type="date" class="form-control" id="startDate" name="startDate" required>
+            <button id="addNeedButton" type="button" class="btn btn-sm btn-outline-success rounded-pill">Tambahkan
+              Kebutuhan Barang</button>
+            <div id="things"></div>
           </div>
           <div class="form-group">
-            <label for="endDate">Tanggal Selesai</label>
-            <input type="date" class="form-control" id="endDate" name="endDate" required>
+            <label class="d-block">Periode Proyek</label>
+            <div class="d-flex">
+              <input type="text" class="form-control me-2" id="startDate" name="startDate"
+                placeholder="Tanggal Mulai Proyek" onfocus="(this.type='date')" onblur="(this.type='text')" required>
+              <input type="text" class="form-control" id="endDate" name="endDate" placeholder="Tanggal Selesai Proyek"
+                onfocus="(this.type='date')" onblur="(this.type='text')" required>
+            </div>
+          </div>
+          <div id="subscription" class="form-group">
+            <label class="d-block">Periode Berlangganan</label>
+            <div class="d-flex">
+              <input type="text" class="form-control me-2" id="startDateSub" name="startDateSub"
+                placeholder="Tanggal Mulai Berlangganan" onfocus="(this.type='date')" onblur="(this.type='text')"
+                required>
+              <input type="text" class="form-control" id="endDateSub" name="endDateSub"
+                placeholder="Tanggal Selesai Berlangganan" onfocus="(this.type='date')" onblur="(this.type='text')"
+                required>
+            </div>
+            <p class="text-info"><small> periode berlangganan ini akan berpengaruh terhadap harga. Harga/hari adalah Rp
+                2.500.</small></p>
           </div>
           <div class="form-group">
-            <label for="budget">Total Biaya yang Dibutuhkan (Rp)</label>
-            <input type="number" min="1" class="form-control" id="budget" name="budget" required>
-          </div>
-          <div class="form-group">
-            <label for="budget"><s>Gambar Cover</s> <sup style="color: blue;">coming soon</sup></label>
+            <label for="image"><s>Gambar Cover</s> <sup style="color: blue;">coming soon</sup></label>
             <input type="file" class="form-control" id="image" name="image" disabled>
           </div>
-          <div class="form-group">
-            <label for="status">Status</label>
-            <select class="form-control" id="status" name="status">
-              <option value="planning">Perencanaan</option>
-              <option value="ongoing">Sedang Berjalan</option>
-              <option value="completed">Sudah Selesai</option>
-              <option value="onhold">Ditunda</option>
-            </select>
-          </div>
-          <button id="submitForm" type="submit" class="btn btn-primary">Buat Projek</button>
+          <button id="submitForm" type="submit" class="btn btn-primary">Buat Proyek</button>
         </form>
       </div>
       <div class="modal-footer">
@@ -70,11 +104,33 @@
   </div>
 </div>
 
-<!-- table -->
+<!-- tablelib -->
 <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+<!-- Initialize Quill editor -->
 <script>
+  const toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+    [{ 'align': [] }],// remove formatting button
+  ];
+
+  const quill = new Quill('#description', {
+    modules: {
+      toolbar: toolbarOptions
+    },
+    theme: 'snow'
+  });
+</script>
+
+<!-- table -->
+<script>
+  let projectCount
   const grid = new gridjs.Grid({
-    columns: ["Nama Projek", "Tipe", "Biaya", "Status", "Tanggal Dibuat", "Aksi"],
+    columns: ["Nama Proyek", "Target", "Lain-Lain", "Periode Berlangganan", "Status", "Tanggal Dibuat", "Aksi"],
     server: {
       url: '/api/project/user',
       method: 'POST',
@@ -83,17 +139,23 @@
       },
       then: data => data.map(project => [
         project.name,
-        project.type,
         new Intl.NumberFormat('id-ID', {
           style: 'currency',
           currency: 'IDR'
         }).format(project.budget),
-        project.status,
+        `${project.additional_need && project.additional_need.length > 0 ? `(${project.additional_need.map(item => `${item.name} - ${item.quantity} ${item.unit}`).join(', ')})` : ''}`,
+        `${project.start_subscription_date ? new Date(project.start_subscription_date).toLocaleDateString('id-ID') : ''} - ${project.end_subscription_date ? new Date(project.end_subscription_date).toLocaleDateString('id-ID') : '-'}`,
+        gridjs.html(`<b><span style="text-transform: uppercase; color: ${project.status === 'active' ? 'green' : (project.status === 'pending' ? 'darkgrey' : (project.status === 'expired' ? 'lightgrey' : 'orange'))};">${project.status}</span></b>`),
         new Date(project.createdAt).toLocaleDateString('id-ID'),
         gridjs.html(`
-        <button id="edit" onclick="editProjectModal(${project.id})" class="btn btn-sm btn-warning">
+        <button id="edit" onclick="editProjectModal('${project.id}')" class="btn btn-sm btn-warning">
           <i class="fas fa-edit"></i> edit
         </button>
+        ${project.status === 'pending' || project.status === 'confirmed' ? `
+          <button id="confirm" onclick="confirmProject('${project.id}')" class="btn btn-sm btn-success">
+            <i class="fas fa-check"></i> konfirmasi
+          </button>
+          ` : ''}
         `)
       ]),
       handle: (res) => {
@@ -112,7 +174,10 @@
     language: {
       'search': {
         'placeholder': '🔍 Cari...'
-      }
+      },
+      empty: {
+        message: "Tidak ada data yang ditemukan", // Ubah pesan di sini
+      },
     },
     style: {
       td: {
@@ -139,8 +204,24 @@
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     const budget = document.getElementById('budget').value;
-    const status = document.getElementById('status').value;
+    const startSub = document.getElementById('startDateSub').value
+    const endSub = document.getElementById('endDateSub').value
     let api, word;
+
+    const formData = new FormData(document.getElementById('projectModalForm'))
+    const thingName = formData.getAll('itemName')
+    const items = []
+
+    if (thingName) {
+      for (let i = 0; i < thingName.length; i++) {
+        items.push({
+          name: thingName[i],
+          quantity: parseFloat(formData.getAll('itemQuantity')[i]),
+          unit: formData.getAll('itemUnit')[i]
+        })
+      }
+    }
+    // console.log('data JSON:', JSON.stringify(items, null, 2))
 
     try {
       const id = document.getElementById("id").value;
@@ -153,26 +234,28 @@
         api = `/api/project/${id}`;
         word = 'Diperbarui';
       }
-
       // Send data to API using Axios
       const method = id ? 'put' : 'post';
       const response = await axios[method](api, {
         name: projectName,
-        description,
+        description: quill.root.innerHTML,
         start_date: startDate,
         end_date: endDate,
+        start_subscription_date: startSub,
+        end_subscription_date: endSub,
         budget,
-        status,
-        type
+        type,
+        additionalNeed: items
       });
-
-      // Handle successful response
-      console.log(response);
       Swal.fire({
         icon: 'success',
         title: `Projek Berhasil ${word}`,
         text: response.data.message,
-      })
+      }).then((result) => {
+        if (result.isConfirmed && method == 'post') {
+          window.location.href = `/dashboard/user/invoice/${response.data.project.id}`;
+        }
+      });
 
       $('#projectModal').modal('hide');
       e.target.reset();
@@ -199,41 +282,105 @@
 
 </script>
 
+<!-- button create/edit -->
 <script>
+
+  document.getElementById('addNeedButton').addEventListener('click', _ => {
+    if (countNeed <= 4) {
+      if (document.getElementById('things').innerHTML == "") {
+        const label = document.createElement("label")
+        label.textContent = "Daftar Kebutuhan Barang";
+        label.className = "mt-3"
+        document.getElementById('things').appendChild(label)
+      }
+      const row = document.createElement("div");
+      row.className = "row mb-3";
+      row.innerHTML = `
+            <div class="col">
+                <input type="text" class="form-control" name="itemName" placeholder="Nama Barang" required>
+            </div>
+            <div class="col">
+                <input type="number" class="form-control" name="itemQuantity" placeholder="Jumlah" required>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="itemUnit" placeholder="Satuan" required>
+            </div>
+        `;
+      document.getElementById('things').appendChild(row);
+      countNeed++;
+    }
+  });
+
+  let countNeed;
   //create button
   document.getElementById('createButton').addEventListener('click', async (e) => {
-    document.getElementsByClassName('modal-title')[0].textContent = 'Buat Project Baru'
-    document.getElementById('submitForm').textContent = 'Buat Project'
+    countNeed = 0
+    document.getElementById('things').innerHTML = ""
+    document.getElementById('subscription').style.display = 'block';
+    document.getElementById('subscription').disabled = false;
+    document.getElementsByClassName('modal-title')[0].textContent = 'Buat Proyek Baru'
+    document.getElementById('submitForm').textContent = 'Buat Proyek'
     document.getElementById('id').value = ""
     document.getElementById('projectName').value = "";
-    document.getElementById('description').value = "";
+    quill.root.innerHTML = "";
     document.getElementById('type').value = "";
     document.getElementById('startDate').value = "";
     document.getElementById('endDate').value = "";
     document.getElementById('budget').value = "";
-    document.getElementById('status').value = "";
+    document.getElementById('addNeedButton').disabled = false
+    //additionalNeed
   })
 
   const editProjectModal = async (id) => {
+    document.getElementById('things').innerHTML = ""
+    countNeed = 0
     try {
       // Fetch project data from API
       const response = await axios.get(`/api/project/${id}`);
       const project = response.data;
-      console.log(response)
 
       // Show modal and set title
       $('#projectModal').modal('show');
-      $('.modal-title').text('Ubah Data Project');
-      $('#submitForm').text('Ubah Project')
+      $('.modal-title').text('Ubah Data Proyek');
+      $('#submitForm').text('Ubah Proyek')
 
       // Fill form fields with project data
       document.getElementById('projectName').value = project.name;
-      document.getElementById('description').value = project.description;
+      project.description = project.description || '';
+      quill.root.innerHTML = project.description;
       document.getElementById('type').value = project.type;
       document.getElementById('startDate').value = project.start_date.split('T')[0];
       document.getElementById('endDate').value = project.end_date.split('T')[0];
       document.getElementById('budget').value = project.budget;
-      document.getElementById('status').value = project.status;
+      document.getElementById('subscription').disabled = true;
+      document.getElementById('subscription').style.display = 'none';
+      document.getElementById('startDateSub').removeAttribute("required");
+      document.getElementById('endDateSub').removeAttribute("required");
+
+      if (project.additional_need) {
+        const label = document.createElement("label")
+        label.textContent = "Daftar Kebutuhan Barang";
+        label.className = "mt-3"
+        document.getElementById('things').appendChild(label)
+
+        project.additional_need.forEach((need) => {
+          const row = document.createElement("div");
+          row.className = "row mb-3";
+          row.innerHTML = `
+            <div class="col">
+                <input type="text" class="form-control" name="itemName" value="${need.name}" placeholder="Nama Barang" required>
+            </div>
+            <div class="col">
+                <input type="number" class="form-control" name="itemQuantity" value="${need.quantity}" placeholder="Jumlah" required>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="itemUnit" value="${need.unit}" placeholder="Satuan" required>
+            </div>
+        `;
+          document.getElementById('things').appendChild(row);
+          countNeed++
+        });
+      }
 
       // Store project ID in hidden field or data attribute
       document.getElementById('id').value = id;
@@ -247,4 +394,27 @@
       });
     }
   };
+
+
+</script>
+
+<!-- confirmProject && addbutton -->
+<script>
+  const confirmProject = id => {
+    window.location.href = `/dashboard/user/invoice/${id}`
+  }
+
+  document.addEventListener("DOMContentLoaded", async _ => {
+    try {
+      const response = await axios.post('/api/project/amount');
+      const existProject = response.data.exist;
+      if (`<%=isDemo%>` && existProject) {
+        document.getElementById('createButton').style.display = 'none';
+      }
+    } catch (error) {
+      console.error('Error fetching project data:', error);
+    }
+  });
+
+
 </script>

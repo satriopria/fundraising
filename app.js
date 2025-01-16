@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./models');
 const path = require('path');
@@ -7,7 +8,8 @@ const PORT = process.env.PORT || 3000;
 const userRoutes = require('./routes/userRoutes');
 const financeRoutes = require('./routes/financeRoutes');
 const projectRoutes = require('./routes/projectRoutes');
-const viewRoutes = require('./routes/viewRoutes');
+const viewAuthHomepageRoutes = require('./routes/viewAuthHomepageRoutes');
+const viewDashboardRoutes = require('./routes/viewDashboardRoutes');
 const paymentRoutes = require('./routes/paymentRoutes')
 const expressEjsLayouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser')
@@ -18,6 +20,9 @@ app.use(cookieParser());
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Set folder 'uploads' sebagai public directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -30,6 +35,8 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(expressEjsLayouts)
+
+app.use(cors());
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -47,7 +54,8 @@ app.use('/api', (req, res) => {
 });
 
 //fe
-app.use('/', viewRoutes);
+app.use('/', viewAuthHomepageRoutes);
+app.use('/dashboard', viewDashboardRoutes);
 
 // Jalankan server
 sequelize.sync({sync:true}).then(() => {

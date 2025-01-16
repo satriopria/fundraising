@@ -13,8 +13,8 @@ const Finance = sequelize.define('Finance', {
         allowNull: false
     },
     project_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     type: {
         type: DataTypes.ENUM('income', 'expense'),

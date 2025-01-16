@@ -11,6 +11,15 @@ const getUsers = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// GET all users
+const getUserById = async (req, res) => {
+  try {
+    const users = await User.findOne({ attributes: ['username', 'email', 'phone', 'role', 'address'], limit: 10, where: {id: req.params.id} });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 // GET user by email and password
 const login = async (req, res) => {
@@ -24,14 +33,14 @@ const login = async (req, res) => {
 
     //generate token jwt
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role },
       process.env.SECRET_KEY,
       { expiresIn: process.env.JWT_EXPIRATION_TIME }
     );
 
     res.cookie('token', token, { httpOnly: true, secure: true });
 
-    res.status(200).json({ message: 'login success', user: {id: user.id, username: user.username}, token });
+    res.status(200).json({ message: 'login success', user: {id: user.id, username: user.username, role: user.role}, token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -54,7 +63,7 @@ const logout = async (req, res) => {
 
 // CREATE new user
 const createUser = async (req, res) => {
-  const { username, phone, email, password, role } = req.body;
+  const { username, phone, email, password, role, address } = req.body;
 
   try {
     const user = await User.findOne({ where: { email: email } });
@@ -62,7 +71,7 @@ const createUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
-      username, phone, email, password: hashedPassword, role
+      username, phone, email, password: hashedPassword, role, address
     });
     res.status(201).json(newUser);
   } catch (err) {
@@ -96,4 +105,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, login, logout, createUser, updateUser, deleteUser };
+module.exports = { getUserById, getUsers, login, logout, createUser, updateUser, deleteUser };

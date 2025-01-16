@@ -18,8 +18,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.0/css/all.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
-
 
   <!-- Custom styles for this template-->
   <link href="/css/sb-admin-2.min.css" rel="stylesheet">
@@ -28,13 +26,12 @@
 </head>
 
 <body id="page-top">
-  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
   <!-- Page Wrapper -->
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="navbar-nav bg-gradient-primary-admin sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
@@ -48,8 +45,8 @@
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Dashboard -->
-      <li class="nav-item <%= currentPath === '/user' ? 'active' : '' %>">
-        <a class="nav-link" href="/dashboard/user">
+      <li class="nav-item <%= currentPath === '/admin' ? 'active' : '' %>">
+        <a class="nav-link" href="/dashboard/admin">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
@@ -62,22 +59,10 @@
       </div>
 
       <!-- Nav Item - Charts -->
-      <li class="nav-item <%= currentPath === '/user/projects' ? 'active' : '' %>">
-        <a class="nav-link" href="/dashboard/user/projects">
+      <li class="nav-item <%= currentPath === '/admin/projects' ? 'active' : '' %>">
+        <a class="nav-link" href="/dashboard/admin/projects">
           <i class="fas fa-fw fa-briefcase"></i>
           <span>Proyek</span></a>
-      </li>
-
-      <li class="nav-item <%= currentPath === '/user/finances' ? 'active' : '' %>">
-        <a class="nav-link" href="/dashboard/user/finances">
-          <i class="fas fa-fw fa-coins"></i>
-          <span>Keuangan</span></a>
-      </li>
-
-      <li class="nav-item <%= currentPath === '/user/setting' ? 'active' : '' %>">
-        <a class="nav-link" href="/dashboard/user/setting">
-          <i class="fas fa-fw fa-cog"></i>
-          <span>Pengaturan</span></a>
       </li>
 
 
@@ -118,7 +103,7 @@
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="#">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  <s>Profil</s>
+                  Profil
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -171,12 +156,12 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Yakin ingin logout?</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Pilih "Logout" di bawah jika Anda yakin ingin logout.</div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
           <button onclick="handleLogout()" class="btn btn-danger">Logout</button>

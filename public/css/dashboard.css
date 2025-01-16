@@ -10,6 +10,10 @@
     width: 120px;
 }
 
+.bg-gradient-primary-admin {
+    background: linear-gradient(#40a119, #1f998f) !important;
+}
+
 /* @media (max-width: 768px) {
     .sidebar {
         width: 0;

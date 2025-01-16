@@ -1,11 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const { v4: uuidv4 } = require('uuid')
 
 const Project = sequelize.define('Project', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     name: {
         type: DataTypes.STRING,
@@ -35,6 +36,18 @@ const Project = sequelize.define('Project', {
     },
     end_date: {
         type: DataTypes.DATE,
+    },
+    start_subscription_date: {
+        type: DataTypes.DATE,
+    },
+    end_subscription_date: {
+        type: DataTypes.DATE,
+    },
+    payment_data: {
+        type: DataTypes.JSON,
+    },
+    additional_need: {
+        type: DataTypes.JSON,
     },
     // image: {
     //     type: DataTypes.STRING,

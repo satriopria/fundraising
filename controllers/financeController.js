@@ -1,8 +1,11 @@
 const { Project, Finance, PaymentMethod } = require('../models');
 const { Op } = require('sequelize')
+const upload = require('../config/multer')
 
-// Get total collected donations for a project
-const getCollectedDonations = async (req, res) => {
+
+
+// Get total collected donations for a project (money only)
+const getCollectedDonation = async (req, res) => {
   const { project_id } = req.params;
   try {
     const totalDonations = await Finance.sum('amount', {
@@ -25,13 +28,48 @@ const getCollectedDonations = async (req, res) => {
   }
 }
 
+const getCollectedDonations = async (req, res) => {
+  const { project_id } = req.params;
+  try {
+    const totalDonations = await Finance.findAll({
+      where: {
+        project_id: project_id,
+        type: 'income',
+        status: 'active'
+      }
+    });
+
+    let totalMoney = 0;
+    const itemCounts = {}
+
+    totalDonations.forEach(donation => {
+      //calc money
+      totalMoney += donation.amount ? parseFloat(donation.amount) : 0;
+
+      //calc thing
+      const items = donation.data.additional_need
+      if (items) items.forEach(item => itemCounts[item.name] = (itemCounts[item.name] || 0) + item.quantity)
+    })
+
+    res.status(200).json({
+      totalMoney,
+      itemCounts
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'Failed to get total donations',
+      details: err.message
+    });
+  }
+}
+
 
 //create finance
 const createFinance = async (req, res) => {
-  const { transaction_name, project_id, name, email, phone, amount, payment_method_id, status} = req.body;
+  const { transaction_name, project_id, name, email, phone, amount, payment_method_id, status, additional_need } = req.body;
   try {
     const finance = await Finance.create({
-      transaction_name, project_id, type: "income", data: { payment_method_id }, amount, status: status || 'pending', name, email, phone
+      transaction_name, project_id, type: "income", data: { additional_need, payment_method_id }, amount, status: status || 'pending', name, email, phone
     });
     res.status(200).json(finance);
   } catch (err) {
@@ -69,6 +107,7 @@ const getAllFinanceOfUser = async (req, res) => {
       financeItem.project_id = projectName.find(projectItem => projectItem.id === financeItem.project_id)?.name || 'Unknown Project';
     });
     if (!finance) return res.status(404).json({ message: 'Record not found' });
+    console.log(finance)
     res.status(200).json(finance);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -120,12 +159,23 @@ const deleteFinance = async (req, res) => {
 
 const confirmFinance = async (req, res) => {
   const { id } = req.params;
+
+  if (!req.file) {
+    return res.status(400).json({ message: 'Bukti transfer diperlukan.' });
+  }
+  
   try {
     const finance = await Finance.findByPk(id);
+    const proofPath = `uploads/${req.file.filename}`;
+
     if (!finance) return res.status(404).json({ message: 'Record not found' });
 
     await finance.update({
-      status: 'confirmed'
+      status: 'confirmed',
+      data: {
+        ...finance.data,
+        proofPath
+      }
     });
     res.status(200).json({ message: 'Record updated successfully' });
   } catch (err) {

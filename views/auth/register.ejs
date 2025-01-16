@@ -1,20 +1,23 @@
 <span id="message" class="text-danger"></span>
 <form id="registerForm" class="margin-t">
   <div class="form-group">
-    <input id="username" name="username" type="text" class="form-control" placeholder="nama pengguna">
+    <input id="username" name="username" type="text" class="form-control" placeholder="Nama Instansi/Yayasan">
   </div>
   <div class="form-group">
-    <input id="email" name="email" type="email" class="form-control" placeholder="email">
+    <input id="email" name="email" type="email" class="form-control" placeholder="Email">
   </div>
   <div class="form-group">
-    <input id="phone" name="phone" type="text" class="form-control" placeholder="nomor handphone">
+    <input id="phone" name="phone" type="text" class="form-control" placeholder="Nomor Handphone">
   </div>
   <div class="form-group">
-    <input id="password" name="password" type="password" class="form-control" placeholder="password">
+    <input id="address" name="address" type="text" class="form-control" placeholder="Alamat Lengkap">
+  </div>
+  <div class="form-group">
+    <input id="password" name="password" type="password" class="form-control" placeholder="Password">
   </div>
   <div class="form-group">
     <input id="password-confirmation" name="password-confirmation" type="password" class="form-control"
-      placeholder="konfirmasi password">
+      placeholder="Konfirmasi Password">
   </div>
   <button type="submit" class="form-button button-l margin-b">Daftar</button>
 
@@ -31,6 +34,7 @@
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
     const password = document.getElementById('password').value;
     const passwordConf = document.getElementById('password-confirmation').value;
 
@@ -56,7 +60,7 @@
     try {
       // Kirim data ke API menggunakan Axios
       const response = await axios.post('/api/users/register', {
-        username, phone, email, password, role:"user"
+        username, phone, email, password, role:"user", address
       });
       // Jika respon sukses
       Swal.fire({

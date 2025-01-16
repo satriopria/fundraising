@@ -16,6 +16,7 @@
     <h4>Jumlah Donasi:</h4>
     <div id="donationAmount" class="mb-2"></div><span id="amount" hidden></span>
     <button class="btn btn-outline-primary" onclick="copyText('amount')">Salin</button>
+    <div id="thing"></div>
   </div>
   <div class="mb-3">
     <h4>Rekening Tujuan:</h4>
@@ -24,10 +25,15 @@
     <div id="accountNumber"></div>
     <button class="btn btn-outline-primary" onclick="copyText('accountNumber')">Salin</button>
   </div>
-  <div class="mb-3">
-    <p>Harap klik tombol konfirmasi setelah Anda menyelesaikan donasi.</p>
-    <button id="confirmDonation" class="btn btn-success">Konfirmasi Donasi</button>
-  </div>
+  <form id="confimForm" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <p>Mohon upload bukti transfer/pengiriman sebelum melakukan konfirmasi.</p>
+      <input type="file" id="transferProof" name="transferProof" accept=".pdf, .jpg, .jpeg, .png" required>
+    </div>
+    <div class="mb-3">
+      <button type="submit" id="confirmDonation" class="btn btn-success">Konfirmasi Donasi</button>
+    </div>
+  </form>
 </div>
 <script>
   function copyText(elementId) {
@@ -58,28 +64,51 @@
     document.getElementById('accountNumber').innerText = `${paymentMethod.account_number}`;
     document.getElementById('accountBank').innerText = `[${paymentMethod.provider}] `;
 
+    if (donation.data.additional_need.length > 0) {
+      document.getElementById('thing').innerHTML += `<h4>Donasi Barang:</h4>`;
+      donation.data.additional_need.forEach((item) => {
+        document.getElementById('thing').innerHTML += `<div class="mb-2">${item.name} - ${item.quantity} ${item.unit}</div>`;
+      });
+    }
+
     document.getElementById('donorName').innerText = donation.name;
     document.getElementById('donorEmail').innerText = donation.email;
     document.getElementById('donorPhone').innerText = donation.phone;
 
-    document.getElementById('confirmDonation').addEventListener('click', async () => {
+    document.getElementById('confirmDonation').addEventListener('click', async (e) => {
+      e.preventDefault(); // Prevent the default form submission behavior
       try {
-        const confirm = await axios.post(`/api/finance/${invoiceId}/confirm`);
-        console.log('Response:', confirm.data); // Debugging respons
         Swal.fire({
-          icon: 'success',
-          title: `Jazakumullahu Khairan! 🙏`,
-          text: `Terima kasih yang sebesar-besarnya atas donasi Anda. Semoga Allah Subhanahu wa Ta'ala menerima amal kebaikan Anda, melipatgandakannya, dan menjadikannya keberkahan bagi Anda dan keluarga.
+          icon: 'warning',
+          title: `Apakah Anda yakin ingin melakukan konfirmasi?`,
+          text: ``,
+          showCancelButton: true,
+          confirmButtonText: "Konfirmasi",
+          cancelButtonText: "Batal",
+        }).then( async (result) => {
+          if (result.isConfirmed) {
+            const formData = new FormData(document.getElementById('confimForm'));
+            const confirm = await axios.post(`/api/finance/${invoiceId}/confirm`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+            Swal.fire({
+              icon: 'success',
+              title: `Jazakumullahu Khairan! 🙏`,
+              text: `Terima kasih yang sebesar-besarnya atas donasi Anda. Semoga Allah Subhanahu wa Ta'ala menerima amal kebaikan Anda, melipatgandakannya, dan menjadikannya keberkahan bagi Anda dan keluarga.
                   Semoga kebaikan ini menjadi jalan pembuka rezeki dan rahmat Allah bagi Anda.
                   Kami berharap dapat terus bersama Anda dalam langkah-langkah kebaikan selanjutnya. Aamiin`,
-        }).then(() => {
-          window.location.href = '/'; // Arahkan ke homepage
+            }).then(() => {
+              window.location.href = '/'; // Arahkan ke homepage
+            });
+          }
         });
       } catch (error) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Gagal mengonfirmasi donasi. Silakan coba lagi.',
+          text: error.response.data.message,
         });
       }
     });
