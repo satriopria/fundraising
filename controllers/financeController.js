@@ -69,7 +69,7 @@ const createFinance = async (req, res) => {
   const { transaction_name, project_id, name, email, phone, amount, payment_method_id, status, additional_need } = req.body;
   try {
     const finance = await Finance.create({
-      transaction_name, project_id, type: "income", data: { additional_need, payment_method_id }, amount, status: status || 'pending', name, email, phone
+      transaction_name, project_id, type: "income", data: JSON.stringify({ additional_need, payment_method_id }), amount, status: status || 'pending', name, email, phone
     });
     res.status(200).json(finance);
   } catch (err) {
@@ -107,7 +107,6 @@ const getAllFinanceOfUser = async (req, res) => {
       financeItem.project_id = projectName.find(projectItem => projectItem.id === financeItem.project_id)?.name || 'Unknown Project';
     });
     if (!finance) return res.status(404).json({ message: 'Record not found' });
-    console.log(finance)
     res.status(200).json(finance);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -170,12 +169,14 @@ const confirmFinance = async (req, res) => {
 
     if (!finance) return res.status(404).json({ message: 'Record not found' });
 
+    finData = await JSON.parse(finance.data)
     await finance.update({
       status: 'confirmed',
-      data: {
-        ...finance.data,
+    //   data: finData
+      data: JSON.stringify({
+        ...finData,
         proofPath
-      }
+      })
     });
     res.status(200).json({ message: 'Record updated successfully' });
   } catch (err) {

@@ -123,11 +123,11 @@
         donation.project_id,
         {
           line1: `${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(donation.amount)}`,
-          line2: `${donation.data.additional_need && donation.data.additional_need.length > 0 ? `(${donation.data.additional_need.map(item => `${item.name} - ${item.quantity} ${item.unit}`).join(', ')})` : ''}`,
+          line2: `${JSON.parse(donation.data).additional_need && JSON.parse(donation.data).additional_need.length > 0 ? `(${JSON.parse(donation.data).additional_need.map(item => `${item.name} - ${item.quantity} ${item.unit}`).join(', ')})` : ''}`,
         },
         new Date(donation.createdAt).toLocaleDateString('id-ID') + ' ' + new Date(donation.createdAt).toLocaleTimeString(),
         gridjs.html(`<b><span style="text-transform: uppercase; color: ${donation.status === 'active' ? 'green' : (donation.status === 'pending' ? 'darkgrey' : (donation.status === 'expired' ? 'lightgrey' : 'orange'))};">${donation.status}</span></b>`),
-        donation.data.proofPath ? gridjs.html(`<a href="/${donation.data.proofPath}" target="_blank">Lihat</a>`) : '',
+        JSON.parse(donation.data).proofPath ? gridjs.html(`<a href="/${JSON.parse(donation.data).proofPath}" target="_blank">Lihat</a>`) : '',
 
         gridjs.html(`
         ${donation.status !== 'active' && donation.status !== 'expired' ? `

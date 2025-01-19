@@ -143,7 +143,7 @@
           style: 'currency',
           currency: 'IDR'
         }).format(project.budget),
-        `${project.additional_need && project.additional_need.length > 0 ? `(${project.additional_need.map(item => `${item.name} - ${item.quantity} ${item.unit}`).join(', ')})` : ''}`,
+        `${JSON.parse(project.additional_need) && JSON.parse(project.additional_need).length > 0 ? `(${JSON.parse(project.additional_need).map(item => `${item.name} - ${item.quantity} ${item.unit}`).join(', ')})` : '-'}`,
         `${project.start_subscription_date ? new Date(project.start_subscription_date).toLocaleDateString('id-ID') : ''} - ${project.end_subscription_date ? new Date(project.end_subscription_date).toLocaleDateString('id-ID') : '-'}`,
         gridjs.html(`<b><span style="text-transform: uppercase; color: ${project.status === 'active' ? 'green' : (project.status === 'pending' ? 'darkgrey' : (project.status === 'expired' ? 'lightgrey' : 'orange'))};">${project.status}</span></b>`),
         new Date(project.createdAt).toLocaleDateString('id-ID'),
@@ -245,7 +245,7 @@
         end_subscription_date: endSub,
         budget,
         type,
-        additionalNeed: items
+        additionalNeed: JSON.stringify(items)
       });
       Swal.fire({
         icon: 'success',
@@ -363,7 +363,7 @@
         label.className = "mt-3"
         document.getElementById('things').appendChild(label)
 
-        project.additional_need.forEach((need) => {
+        JSON.parse(project.additional_need).forEach((need) => {
           const row = document.createElement("div");
           row.className = "row mb-3";
           row.innerHTML = `

@@ -80,4 +80,20 @@ router.get('/user/invoice/:project_id', verifyToken, authorizeRole('user'), (req
     })
 })
 
+router.get('/user/profile', verifyToken, authorizeRole('user'), async (req, res) => {
+    try {
+        const userData = await fetch(`${process.env.BASE_URL}/api/users/${req.user.id}`, {method: "GET"});
+        const user = await userData.json();
+        res.render('dashboard/profile', {
+            title: 'Profile',
+            layout: 'dashboard/dashboardTemplate',
+            currentPath: req.path,
+            user
+        });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        return res.status(500).send('Internal Server Error');
+    }
+})
+
 module.exports = router;

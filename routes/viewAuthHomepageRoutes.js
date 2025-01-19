@@ -24,6 +24,10 @@ router.get('/forgot-password', (req, res) => {
     });
 });
 
+// router.get('/', (req, res) => {
+//   res.send('Hola people');
+// });
+
 router.get('/', async (req, res) => {
     function removeTags(str) {
         if ((str === null) || (str === ''))
@@ -34,7 +38,7 @@ router.get('/', async (req, res) => {
     }
 
     const search = req.query.search || '';
-    let projectList;
+    let projectList = [];
     try {
         const response = await fetch(`${process.env.BASE_URL}/api/project`);
         projectList = await response.json();
@@ -42,16 +46,20 @@ router.get('/', async (req, res) => {
         console.error('Error fetching projects:', error);
     }
 
-    projectList.forEach(project => {
-        project.description = removeTags(project.description);
-    });
+    if(projectList.length > 0){
+        projectList.forEach(project => {
+            project.description = removeTags(project.description);
+        });
+    }
 
     res.render('index', {
         title: "index",
         layout: "indexLayout",
         search,
         projectList,
+        projectListu: "namasaya",
     });
+    // res.send('Hola people');
 });
 
 router.get('/project-detail/:id', async (req, res) => {

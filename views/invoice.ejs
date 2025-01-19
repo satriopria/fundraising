@@ -52,21 +52,21 @@
     response = await axios.get(`/api/finance/${invoiceId}`);
     const donation = response.data;
 
-    response = await axios.get(`/api/payment/${donation.data.payment_method_id}`);
+    response = await axios.get(`/api/payment/${JSON.parse(donation.data).payment_method_id}`);
     const paymentMethod = response.data
 
     document.getElementById('donationAmount').innerText = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR'
     }).format(donation.amount) || "0";
-    document.getElementById('amount').innerText = donation.amount || "0";
+    document.getElementById('amount').innerText = parseInt(donation.amount) || "0";
     document.getElementById('accountName').innerText = `(a/n ${paymentMethod.account_name})`;
     document.getElementById('accountNumber').innerText = `${paymentMethod.account_number}`;
     document.getElementById('accountBank').innerText = `[${paymentMethod.provider}] `;
 
-    if (donation.data.additional_need.length > 0) {
+    if (JSON.parse(donation.data).additional_need.length > 0) {
       document.getElementById('thing').innerHTML += `<h4>Donasi Barang:</h4>`;
-      donation.data.additional_need.forEach((item) => {
+      JSON.parse(donation.data).additional_need.forEach((item) => {
         document.getElementById('thing').innerHTML += `<div class="mb-2">${item.name} - ${item.quantity} ${item.unit}</div>`;
       });
     }

@@ -98,7 +98,7 @@
               </div>
 
 
-              <% if(projectDetail.additional_need.length> 0) { %>
+              <% if(JSON.parse(projectDetail.additional_need).length> 0) { %>
                 <div class="form-group">
                   <button id="addDonationItem" type="button"
                     class="mb-3 btn btn-sm btn-outline-success rounded-pill">Tambahkan
@@ -148,7 +148,7 @@
           </div>
         </div>
       </div>
-      <% if(projectDetail.additional_need.length> 0) { %>
+      <% if(JSON.parse(projectDetail.additional_need).length> 0) { %>
         <h4 class="text-primary">Kebutuhan Barang Lain</h4>
         <div class="table-responsive">
           <table class="table table-striped">
@@ -160,7 +160,7 @@
               </tr>
             </thead>
             <tbody>
-              <% projectDetail.additional_need.forEach((need)=> { %>
+              <% JSON.parse(projectDetail.additional_need).forEach((need)=> { %>
                 <tr>
                   <td>
                     <%= need.name %>
@@ -279,7 +279,7 @@
   const addDonationItemButton = document.getElementById('addDonationItem');
   const donationForm = document.getElementById('donationForm');
 
-  const availableItems = JSON.parse(`<%- JSON.stringify(projectDetail.additional_need) %>`);
+  const availableItems = JSON.parse(`<%- projectDetail.additional_need %>`);
 
   // console.log()
   addDonationItemButton.addEventListener('click', () => {

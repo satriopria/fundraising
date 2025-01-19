@@ -5,7 +5,7 @@ const User = require('../models/User');
 // GET all users
 const getUsers = async (req, res) => {
   try {
-    const users = await User.findAll({ attributes: ['username', 'email', 'phone', 'role'], limit: 10 });
+    const users = await User.findAll({ attributes: ['username', 'email', 'phone', 'role'] });
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -14,7 +14,7 @@ const getUsers = async (req, res) => {
 // GET all users
 const getUserById = async (req, res) => {
   try {
-    const users = await User.findOne({ attributes: ['username', 'email', 'phone', 'role', 'address'], limit: 10, where: {id: req.params.id} });
+    const users = await User.findOne({ attributes: ['id', 'username', 'email', 'phone', 'role', 'address'], where: { id: req.params.id } });
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -40,7 +40,7 @@ const login = async (req, res) => {
 
     res.cookie('token', token, { httpOnly: true, secure: true });
 
-    res.status(200).json({ message: 'login success', user: {id: user.id, username: user.username, role: user.role}, token });
+    res.status(200).json({ message: 'login success', user: { id: user.id, username: user.username, role: user.role }, token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -82,8 +82,19 @@ const createUser = async (req, res) => {
 // UPDATE user by ID
 const updateUser = async (req, res) => {
   try {
+
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    // console.log(req.body)
+
+    if (req.body.currentPassword) {
+      const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+      if (!isMatch) return res.status(400).json({ message: 'Password Saat Ini tidak sesuai' });
+      const hashedNewPassword = await bcrypt.hash(req.body.newPassword, 10);
+      req.body.password = hashedNewPassword;
+    }
+
 
     await user.update(req.body);
     res.json(user);

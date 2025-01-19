@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv').config();
 const { sequelize } = require('./models');
 const path = require('path');
 const PORT = process.env.PORT || 3000;
@@ -39,10 +39,10 @@ app.use(expressEjsLayouts)
 app.use(cors());
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({ error: 'Something went wrong!' });
+// });
 
 //be
 app.use('/api/users', userRoutes);

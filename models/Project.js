@@ -44,10 +44,14 @@ const Project = sequelize.define('Project', {
         type: DataTypes.DATE,
     },
     payment_data: {
-        type: DataTypes.JSON,
+        type: DataTypes.TEXT,
+    },
+    is_Show: {
+        type: DataTypes.BOOLEAN,
+        default: true
     },
     additional_need: {
-        type: DataTypes.JSON,
+        type: DataTypes.TEXT,
     },
     // image: {
     //     type: DataTypes.STRING,
