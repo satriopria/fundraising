@@ -21,7 +21,7 @@ const Finance = sequelize.define('Finance', {
         allowNull: false,
     },
     data: {
-        type: DataTypes.TEXT,
+        type: DataTypes.TEXT('long'),
         allowNull: true
     },
     amount: {

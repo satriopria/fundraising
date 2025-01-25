@@ -12,39 +12,39 @@
         </h4>
       </div>
       <!-- Organizer Details -->
-  <div class="col mt-5">
-    <h4 class="text-center mb-4">Detail Penyelenggara</h3>
-    <div class="row-md-4 text-center">
-      <div class="card shadow">
-        <div class="card-body">
-          <h5 class="card-title">Pengelola</h5>
-          <p class="card-text">
-            <%= organizer.username %>
-          </p>
-        </div>
+      <div class="col mt-5">
+        <h4 class="text-center mb-4">Detail Penyelenggara</h3>
+          <div class="row-md-4 text-center">
+            <div class="card shadow">
+              <div class="card-body">
+                <h5 class="card-title">Pengelola</h5>
+                <p class="card-text">
+                  <%= organizer.username %>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row-md-4 text-center">
+            <div class="card shadow">
+              <div class="card-body">
+                <h5 class="card-title">Nomor Telepon</h5>
+                <p class="card-text">
+                  <%= organizer.phone || 'Tidak tersedia' %>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row-md-4 text-center">
+            <div class="card shadow">
+              <div class="card-body">
+                <h5 class="card-title">Alamat</h5>
+                <p class="card-text">
+                  <%= organizer.address || 'Tidak tersedia' %>
+                </p>
+              </div>
+            </div>
+          </div>
       </div>
-    </div>
-    <div class="row-md-4 text-center">
-      <div class="card shadow">
-        <div class="card-body">
-          <h5 class="card-title">Nomor Telepon</h5>
-          <p class="card-text">
-            <%= organizer.phone || 'Tidak tersedia' %>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="row-md-4 text-center">
-      <div class="card shadow">
-        <div class="card-body">
-          <h5 class="card-title">Alamat</h5>
-          <p class="card-text">
-            <%= organizer.address || 'Tidak tersedia' %>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
     </div>
     <!-- Donation Modal -->
     <div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
@@ -186,7 +186,7 @@
 
   <hr class="my-5">
 
-  
+
 </div>
 
 <script>
@@ -276,16 +276,16 @@
 
 <script>
   const donationItemsContainer = document.getElementById('things');
-  const addDonationItemButton = document.getElementById('addDonationItem');
   const donationForm = document.getElementById('donationForm');
 
   const availableItems = JSON.parse(`<%- projectDetail.additional_need %>`);
 
   // console.log()
-  addDonationItemButton.addEventListener('click', () => {
-    const itemDiv = document.createElement('div');
-    itemDiv.classList.add('row', 'mb-3', 'align-items-center', 'donation-item');
-    itemDiv.innerHTML = `
+  if (document.getElementById('addDonationItem')) {
+    document.getElementById('addDonationItem').addEventListener('click', () => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('row', 'mb-3', 'align-items-center', 'donation-item');
+      itemDiv.innerHTML = `
       <div class="col-6">
         <select class="form-select" name="itemName" required>
           <option value="">Pilih Barang...</option>
@@ -300,14 +300,15 @@
       </div>
     `;
 
-    donationItemsContainer.appendChild(itemDiv);
+      donationItemsContainer.appendChild(itemDiv);
 
-    // Event listener untuk tombol hapus
-    itemDiv.querySelector('.remove-item').addEventListener('click', () => {
-      itemDiv.remove();
+      // Event listener untuk tombol hapus
+      itemDiv.querySelector('.remove-item').addEventListener('click', () => {
+        itemDiv.remove();
+      });
     });
-  });
 
+  }
   // Validasi sebelum submit
   donationForm.addEventListener('submit', (e) => {
     const moneyDonation = document.getElementById('customAmount').value || document.querySelector('.donation-preset.active')?.dataset?.amount;

@@ -69,9 +69,10 @@ router.get('/project-detail/:id', async (req, res) => {
         response = await fetch(`${process.env.BASE_URL}/api/project/${id}`);
         projectDetail = await response.json();
         projectDetail.budget = parseInt(projectDetail.budget)
-        console.log(projectDetail)
+        // console.log(projectDetail)
         response = await fetch(`${process.env.BASE_URL}/api/finance/collect/${id}`, { method: "POST" })
         collectedDonation = await response.json();
+        // console.log(collectedDonation)
 
         response = await fetch(`${process.env.BASE_URL}/api/payment/list/${projectDetail.user_id}`);
         paymentMethod = await response.json();

@@ -47,7 +47,7 @@ const getCollectedDonations = async (req, res) => {
       totalMoney += donation.amount ? parseFloat(donation.amount) : 0;
 
       //calc thing
-      const items = donation.data.additional_need
+      const items = JSON.parse(donation.data).additional_need
       if (items) items.forEach(item => itemCounts[item.name] = (itemCounts[item.name] || 0) + item.quantity)
     })
 

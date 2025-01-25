@@ -4,7 +4,7 @@ const { Op, sequelize } = require('sequelize');
 
 // Create a new project
 const createProject = async (req, res) => {
-  const { name, description, type, budget, start_date, end_date, start_subscription_date, end_subscription_date, additionalNeed} = req.body;
+  const { name, description, type, budget, start_date, end_date, start_subscription_date, end_subscription_date, additionalNeed, visibility} = req.body;
 
   try {
     const project = await Project.create({
@@ -17,7 +17,8 @@ const createProject = async (req, res) => {
       start_subscription_date,
       end_subscription_date,
       user_id: req.user.id,
-      additional_need: additionalNeed
+      additional_need: additionalNeed,
+      visibility,
     });
 
     res.status(201).json({
@@ -42,7 +43,7 @@ const getAllProjects = async (req, res) => {
 // Get all projects
 const getActiveProjects = async (req, res) => {
   try {
-    const projects = await Project.findAll({where: {status: 'active'}});
+    const projects = await Project.findAll({where: {status: 'active', visibility: true}});
     res.status(200).json(projects);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
@@ -114,7 +115,7 @@ const getProjectById = async (req, res) => {
 // Update a project
 const updateProject = async (req, res) => {
   const { id } = req.params;
-  const { name, description, type, budget, start_date, end_date, status, user_id, additionalNeed } = req.body;
+  const { name, description, type, budget, start_date, end_date, status, user_id, additionalNeed, visibility } = req.body;
 
   try {
     const project = await Project.findByPk(id, { where: { user_id: req.user.id } });
@@ -122,7 +123,7 @@ const updateProject = async (req, res) => {
 
     await project.update({
       name, description, type, budget, start_date, end_date, status, 
-      user_id: req.user.id, additional_need: additionalNeed
+      user_id: req.user.id, additional_need: additionalNeed, visibility
     });
 
     res.status(200).json({
