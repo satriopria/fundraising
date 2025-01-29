@@ -169,9 +169,10 @@ const confirmFinance = async (req, res) => {
 
     if (!finance) return res.status(404).json({ message: 'Record not found' });
 
+
     finData = await JSON.parse(finance.data)
     await finance.update({
-      status: 'confirmed',
+      status: finance.status !== 'active' ? 'confirmed' : finance.status,
     //   data: finData
       data: JSON.stringify({
         ...finData,

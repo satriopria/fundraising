@@ -27,8 +27,10 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="addDonationForm">
+      <form id="addDonationForm" method="POST" enctype="multipart/form-data">
         <div class="modal-body">
+          <input type="hidden" name="transactionName" id="transactionName" value="manual donation">
+          <input type="hidden" name="status" id="status" value="active">
           <div class="form-group">
             <label>Nama</label>
             <input type="text" class="form-control" id="donorName" name="donorName" placeholder="nama" required>
@@ -56,7 +58,7 @@
             </div>
           </div>
           <div class="form-group">
-            <button id="addDonationItem" type="button"
+            <button id="addDonationItem" type="button" style="display: none;"
               class="mb-3 btn btn-sm btn-outline-success rounded-pill">Tambahkan
               Donasi Barang</button>
             <div id="things"></div>
@@ -202,35 +204,53 @@
 
     try {
       // Ambil data dari form
-      const donorName = document.getElementById('donorName').value;
-      const donorEmail = document.getElementById('donorEmail').value || null;
-      const donorPhone = document.getElementById('donorPhone').value || null;
+      const name = document.getElementById('donorName').value;
+      const email = document.getElementById('donorEmail').value || null;
+      const phone = document.getElementById('donorPhone').value || null;
       const amount = document.querySelector('input[name="amount"]').value;
-      const projectId = document.getElementById('selectProject').value;
-      const paymentMethodId = document.getElementById('selectPaymentMethod').value;
-      const proofPath = document.getElementById('proofPath').value || null;
+      const project_id = document.getElementById('selectProject').value;
+      const payment_method_id = document.getElementById('selectPaymentMethod').value;
+      const status = document.getElementById('status').value;
+      const transaction_name = document.getElementById('transactionName').value;
+
+      //get things list
+      const donationItems = [];
+
+      document.querySelectorAll('select[name="itemName"]').forEach((item, index) => {
+        const quantity = parseInt(document.querySelectorAll('input[name="itemQty"]')[index].value);
+        const unit = item.options[item.selectedIndex].getAttribute('data-unit');
+        const existingItem = donationItems.find(donation => donation.name === item.value);
+
+        if (existingItem) {
+          existingItem.quantity += quantity;
+        } else {
+          donationItems.push({ name: item.value, quantity, unit });
+        }
+      });
 
       // Validasi input (contoh sederhana)
-      if (!donorName || !amount || !projectId || !paymentMethodId) {
+      if (!name || !amount || !project_id || !payment_method_id) {
         alert('Mohon lengkapi semua data yang diperlukan.');
         return;
       }
 
-      // Ambil token dari localStorage untuk autentikasi (jika diperlukan)
-      // const token = localStorage.getItem('token');
-
       // Kirim data ke API menggunakan axios
-      const response = await axios.post('/api/finance/create', {
-        transaction_name: "manual donation",
-        name: donorName,
-        email: donorEmail,
-        phone: donorPhone,
-        amount,
-        project_id: projectId,
-        payment_method_id: paymentMethodId,
-        status: "active",
-        proofPath,
+      const financeResponse = await axios.post('/api/finance/create', {
+        transaction_name, name, email, phone, amount,
+        project_id, payment_method_id, additional_need: donationItems,
+        status,
       });
+
+      const financeId = financeResponse.data.id; // Assuming the API returns the finance_id in the response
+      if (financeId) {
+        const formData = new FormData();
+        formData.append('transferProof', document.getElementById('proofPath').files[0])
+        const confirm = await axios.post(`/api/finance/${financeId}/confirm`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      }
 
       // Tampilkan notifikasi sukses
       Swal.fire({
@@ -258,50 +278,108 @@
 
 <!-- onload -->
 <script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
-      // Fetch project list
-      const projects = await axios.post('/api/project/user', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+  document.addEventListener('DOMContentLoaded', _ => {
+    const projectSelect = document.getElementById('selectProject');
+    const addDonationItem = document.getElementById("addDonationItem");
+    const thingsContainer = document.getElementById("things");
+    let availableItems;
 
-      // Populate project dropdown
-      const projectSelect = document.getElementById('selectProject');
-      projectSelect.innerHTML = `<option value="">Pilih Projek</option>`;
-      projects.data.forEach((project) => {
-        const option = document.createElement('option');
-        option.value = project.id; // Ganti 'id' sesuai field pada respons API
-        option.textContent = project.name; // Ganti 'name' sesuai field pada respons API
-        projectSelect.appendChild(option);
-      });
+    async function load() {
+      try {
+        // Fetch project list
+        const projects = await axios.post('/api/project/user', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
 
-      // Fetch payment method list
-      const paymentMethods = await axios.post('/api/payment/user', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+        // Populate project dropdown
+        projectSelect.innerHTML = `<option value="">Pilih Projek</option>`;
+        projects.data.forEach((project) => {
+          const option = document.createElement('option');
+          option.value = project.id; // Ganti 'id' sesuai field pada respons API
+          option.textContent = project.name; // Ganti 'name' sesuai field pada respons API
+          projectSelect.appendChild(option);
+        });
 
-      // Populate payment method dropdown
-      const paymentMethodSelect = document.getElementById('selectPaymentMethod');
-      paymentMethods.data.forEach((method) => {
-        const option = document.createElement('option');
-        option.value = method.id; // Ganti 'id' sesuai field pada respons API
-        option.textContent = `${method.account_number} ${method.provider} - a/n ${method.account_name}`; // Ganti 'name' sesuai field pada respons API
-        paymentMethodSelect.appendChild(option);
-      });
-    } catch (error) {
-      console.error('Error fetching data:', error.response?.data || error.message);
+        // Fetch payment method list
+        const paymentMethods = await axios.post('/api/payment/user', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        // Populate payment method dropdown
+        const paymentMethodSelect = document.getElementById('selectPaymentMethod');
+        paymentMethods.data.forEach((method) => {
+          const option = document.createElement('option');
+          option.value = method.id; // Ganti 'id' sesuai field pada respons API
+          option.textContent = `${method.account_number} ${method.provider} - a/n ${method.account_name}`; // Ganti 'name' sesuai field pada respons API
+          paymentMethodSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error.response?.data || error.message);
+      }
     }
+
+    // Event listener ketika project dipilih
+    projectSelect.addEventListener("change", async function () {
+      const projectId = this.value;
+      if (!projectId) return;
+
+      try {
+        // Hit API untuk mendapatkan data tambahan
+        const response = await axios.get(`/api/project/${projectId}`);
+        const data = response.data;
+
+        // Cek apakah ada items
+        if (data.additional_need && JSON.parse(data.additional_need).length > 0) {
+          addDonationItem.style.display = "block"; // Tampilkan tombol
+          addDonationItem.dataset.items = data.additional_need; // Simpan data items di atribut data
+          availableItems = JSON.parse(data.additional_need)
+        } else {
+          addDonationItem.style.display = "none"; // Sembunyikan tombol jika tidak ada items
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data proyek:", error);
+        addDonationItem.style.display = "none";
+      }
+    });
+
+    // Event listener ketika tombol addDonationItem diklik
+    addDonationItem.addEventListener("click", function () {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('row', 'mb-3', 'align-items-center', 'donation-item');
+      itemDiv.innerHTML = `
+        <div class="col-6">
+          <select class="form-select" name="itemName" required>
+            <option value="">Pilih Barang...</option>
+            ${availableItems.map(item => `<option value="${item.name}" data-unit="${item.unit}">${item.name} (${item.unit})</option>`).join('')}
+          </select>
+        </div>
+        <div class="col-4">
+          <input type="number" class="form-control" name="itemQty" placeholder="Jumlah" min="1" required>
+        </div>
+        <div class="col-1 text-end">
+          <button type="button" class="btn btn-danger btn-sm remove-item">&times;</button>
+        </div>
+      `;
+      thingsContainer.appendChild(itemDiv);
+
+      // Event listener untuk tombol hapus
+      itemDiv.querySelector('.remove-item').addEventListener('click', () => {
+        itemDiv.remove();
+      });
+    });
+
+
+    load()
   });
 </script>
 
 <!-- check additional need -->
 <script>
   const checkAdditionalNeed = async id => {
-    console.log(id)
     try {
       const project = await axios.get(`/api/project/${id}`)
 

@@ -86,7 +86,8 @@
                 placeholder="Tanggal Selesai Berlangganan" onfocus="(this.type='date')" onblur="(this.type='text')"
                 required>
             </div>
-            <p class="text-info"><small>Keterangan: Periode berlangganan ini akan berpengaruh terhadap harga. Harga/hari adalah Rp
+            <p class="text-info"><small>Keterangan: Periode berlangganan ini akan berpengaruh terhadap harga. Harga/hari
+                adalah Rp
                 2.500.</small></p>
           </div>
           <div class="form-group">
@@ -99,7 +100,8 @@
               <option value="show">Tampilkan</option>
               <option value="hide">Sembunyikan</option>
             </select>
-            <p class="text-info"><small>Keterangan: Proyek yang disembunyikan tidak akan tersedia untuk donatur.</small></p>
+            <p class="text-info"><small>Keterangan: Proyek yang disembunyikan tidak akan tersedia untuk donatur.</small>
+            </p>
           </div>
           <button id="submitForm" type="submit" class="btn btn-primary">Buat Proyek</button>
         </form>
@@ -230,6 +232,8 @@
           unit: formData.getAll('itemUnit')[i]
         })
       }
+    } else {
+      items = null
     }
     // console.log('data JSON:', JSON.stringify(items, null, 2))
 
@@ -255,8 +259,8 @@
         end_subscription_date: endSub,
         budget,
         type,
-        additionalNeed: JSON.stringify(items),
-        visibility: visibility == "show" ? true : false,   
+        additionalNeed: JSON.stringify(items || null),
+        visibility: visibility == "show" ? true : false,
       });
       Swal.fire({
         icon: 'success',
@@ -305,16 +309,19 @@
         document.getElementById('things').appendChild(label)
       }
       const row = document.createElement("div");
-      row.className = "row mb-3";
+      row.className = "row mb-3 align-items-center";
       row.innerHTML = `
-            <div class="col">
+            <div class="col-4">
                 <input type="text" class="form-control" name="itemName" placeholder="Nama Barang" required>
             </div>
-            <div class="col">
+            <div class="col-3">
                 <input type="number" class="form-control" name="itemQuantity" placeholder="Jumlah" required>
             </div>
-            <div class="col">
+            <div class="col-3">
                 <input type="text" class="form-control" name="itemUnit" placeholder="Satuan" required>
+            </div>
+            <div class="col text-end">
+              <button type="button" class="btn btn-danger btn-sm remove-item">&times;</button>
             </div>
         `;
       document.getElementById('things').appendChild(row);
@@ -377,19 +384,28 @@
 
         JSON.parse(project.additional_need).forEach((need) => {
           const row = document.createElement("div");
-          row.className = "row mb-3";
+          row.className = "row mb-3 align-items-center";
           row.innerHTML = `
-            <div class="col">
+            <div class="col-4">
                 <input type="text" class="form-control" name="itemName" value="${need.name}" placeholder="Nama Barang" required>
             </div>
-            <div class="col">
+            <div class="col-3">
                 <input type="number" class="form-control" name="itemQuantity" value="${need.quantity}" placeholder="Jumlah" required>
             </div>
-            <div class="col">
+            <div class="col-3">
                 <input type="text" class="form-control" name="itemUnit" value="${need.unit}" placeholder="Satuan" required>
+            </div>
+            <div class="col text-end">
+              <button type="button" class="btn btn-danger btn-sm remove-item">&times;</button>
             </div>
         `;
           document.getElementById('things').appendChild(row);
+
+          row.querySelector('.remove-item').addEventListener('click', () => {
+            row.remove();
+            if (!document.getElementById('things').querySelector('div')) label.textContent = '';
+          });
+
           countNeed++
         });
       }
