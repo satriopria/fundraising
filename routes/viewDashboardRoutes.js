@@ -84,7 +84,6 @@ router.get('/user/profile', verifyToken, authorizeRole('user'), async (req, res)
     try {
         const userData = await fetch(`${process.env.BASE_URL}/api/users/${req.user.id}`, {method: "GET"});
         const user = await userData.json();
-        console.log(user)
         res.render('dashboard/profile', {
             title: 'Profile',
             layout: 'dashboard/dashboardTemplate',
