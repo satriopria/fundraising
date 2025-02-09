@@ -93,12 +93,18 @@ router.get('/project-detail/:id', async (req, res) => {
     })
 })
 
-router.get('/invoice/:id', async (req, res) => {
+router.get('/invoice/:id', (req, res) => {
     res.render('invoice', {
         title: "Invoice",
         layout: "indexLayout",
     })
 })
 
+router.get('/terms-and-conditions', (req, res) => {
+    res.render('terms', {
+        title: "Terms and Conditions",
+        layout: "indexLayout"
+    })
+})
 
 module.exports = router;

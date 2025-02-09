@@ -20,7 +20,15 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    address: {
+    foundation_name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    foundation_license: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    foundation_address: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -39,6 +47,10 @@ const User = sequelize.define('User', {
     is_verified_phone: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    is_approved_terms: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     }
 }, {
     timestamps: true

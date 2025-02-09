@@ -10,6 +10,17 @@
   </div>
 </section>
 
+<div class="container mt-5">
+  <div class="alert alert-warning p-4 rounded-3 shadow">
+    <h4 class="alert-heading">Disclaimer</h4>
+    <p class="mb-0 text-justify">
+      Donatur dihimbau untuk memastikan proyek yang dipilih benar-benar ada dan dikelola secara bertanggung jawab.
+      Website ini hanya sebagai perantara antara pengelola proyek dan donatur, serta tidak bertanggung jawab atas
+      informasi proyek, penyalahgunaan donasi, atau potensi kerugian.
+    </p>
+  </div>
+</div>
+
 <!-- Projects Section -->
 <section class="py-5" id="projects">
   <div class="container">
@@ -17,7 +28,8 @@
 
     <!-- Search Bar -->
     <form class="d-flex mb-4" id="searchForm">
-      <input type="text" name="search" id="searchInput" class="form-control me-2" placeholder="Cari proyek..." value="<%= search || '' %>">
+      <input type="text" name="search" id="searchInput" class="form-control me-2" placeholder="Cari proyek..."
+        value="<%= search || '' %>">
       <button type="submit" class="btn btn-primary">Cari</button>
     </form>
 
@@ -27,7 +39,8 @@
         <% projectList.forEach(project=> { %>
           <div class="col-md-4">
             <div class="card h-100">
-              <img src="<%= project.thumbnail || '/img/default_image.png' %>" class="card-img-top" alt="<%= project.title %>">
+              <img src="<%= project.thumbnail || '/img/default_image.png' %>" class="card-img-top"
+                alt="<%= project.title %>">
               <div class="card-body">
                 <h5 class="card-title">
                   <%= project.name %>
@@ -48,21 +61,21 @@
 </section>
 
 <script>
-document.getElementById('searchForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  try {
-    const searchTerm = document.getElementById('searchInput').value;
-    const response = await axios.post(`/api/project/search`, {
-      name: searchTerm
-    });
-    
-    const projectList = document.getElementById('projectList');
-    projectList.innerHTML = ''; // Clear existing projects
-    
-    if (response.data.length > 0) {
-      response.data.forEach(project => {
-        projectList.innerHTML += `
+  document.getElementById('searchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    try {
+      const searchTerm = document.getElementById('searchInput').value;
+      const response = await axios.post(`/api/project/search`, {
+        name: searchTerm
+      });
+
+      const projectList = document.getElementById('projectList');
+      projectList.innerHTML = ''; // Clear existing projects
+
+      if (response.data.length > 0) {
+        response.data.forEach(project => {
+          projectList.innerHTML += `
           <div class="col-md-4">
             <div class="card h-100">
               <img src="${project.thumbnail || '/img/default_image.png'}" class="card-img-top" alt="${project.name}">
@@ -74,13 +87,13 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
             </div>
           </div>
         `;
-      });
-    } else {
-      projectList.innerHTML = '<p class="text-center">Tidak ada project yang ditemukan.</p>';
+        });
+      } else {
+        projectList.innerHTML = '<p class="text-center">Tidak ada project yang ditemukan.</p>';
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Terjadi kesalahan saat mencari project');
     }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Terjadi kesalahan saat mencari project');
-  }
-});
+  });
 </script>

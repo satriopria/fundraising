@@ -14,7 +14,7 @@ const getUsers = async (req, res) => {
 // GET all users
 const getUserById = async (req, res) => {
   try {
-    const users = await User.findOne({ attributes: ['id', 'username', 'email', 'phone', 'role', 'address'], where: { id: req.params.id } });
+    const users = await User.findOne({ attributes: ['id', 'username', 'email', 'phone', 'role', 'foundation_name', 'foundation_address', 'foundation_license'], where: { id: req.params.id } });
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -63,7 +63,10 @@ const logout = async (req, res) => {
 
 // CREATE new user
 const createUser = async (req, res) => {
-  const { username, phone, email, password, role, address } = req.body;
+  const {
+    username, phone, email, password, role, address,
+    foundName, foundLicense, foundAddress, approval
+  } = req.body;
 
   try {
     const user = await User.findOne({ where: { email: email } });
@@ -71,7 +74,8 @@ const createUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
-      username, phone, email, password: hashedPassword, role, address
+      username, phone, email, password: hashedPassword, role, address, is_approved_terms: approval,
+      foundation_name: foundName, foundation_license: foundLicense, foundation_address: foundAddress
     });
     res.status(201).json(newUser);
   } catch (err) {

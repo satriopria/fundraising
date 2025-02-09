@@ -1,7 +1,16 @@
 <span id="message" class="text-danger"></span>
 <form id="registerForm" class="margin-t">
   <div class="form-group">
-    <input id="username" name="username" type="text" class="form-control" placeholder="Nama Instansi/Yayasan">
+    <input id="username" name="username" type="text" class="form-control" placeholder="Nama Pengguna Sesuai KTP">
+  </div>
+  <div class="form-group">
+    <input id="foundation-name" name="foundation-name" type="text" class="form-control" placeholder="Nama Instansi/Yayasan">
+  </div>
+  <div class="form-group">
+    <input id="foundation-license" name="foundation-license" type="text" class="form-control" placeholder="No Izin Yayasan">
+  </div>
+  <div class="form-group">
+    <input id="foundation-address" name="foundation-address" type="text" class="form-control" placeholder="Alamat Lengkap Yayasan">
   </div>
   <div class="form-group">
     <input id="email" name="email" type="email" class="form-control" placeholder="Email">
@@ -10,22 +19,35 @@
     <input id="phone" name="phone" type="text" class="form-control" placeholder="Nomor Handphone">
   </div>
   <div class="form-group">
-    <input id="address" name="address" type="text" class="form-control" placeholder="Alamat Lengkap">
+    <div class="row">
+      <div class="col-6">
+        <input id="password" name="password" type="password" class="form-control" placeholder="Password">
+      </div>
+      <div class="col-6">
+        <input id="password-confirmation" name="password-confirmation" type="password" class="form-control"
+          placeholder="Konfirmasi Password">
+      </div>
+    </div>
   </div>
   <div class="form-group">
-    <input id="password" name="password" type="password" class="form-control" placeholder="Password">
-  </div>
-  <div class="form-group">
-    <input id="password-confirmation" name="password-confirmation" type="password" class="form-control"
-      placeholder="Konfirmasi Password">
+    <div class="form-check">
+      <input id="terms-approval" name="terms-approval" type="checkbox" class="form-check-input" value="true" required>
+      <label for="terms-approval" class="form-check-label text-whitesmoke">Saya setuju dengan <a href="/terms-and-conditions">syarat dan ketentuan</a>.</label>
+    </div>
   </div>
   <button type="submit" class="form-button button-l margin-b">Daftar</button>
 
-  <p class="text-whitesmoke text-center"><small>Sudah punya akun?</small></p>
-  <a class="text-darkyellow" href="/login"><small>Masuk</small></a>
+  <p class="text-whitesmoke text-center">Sudah punya akun?</p>
+  <a class="text-darkyellow" href="/login">Masuk</a>
 </form>
 
 <script>
+  // Set checkbox to unchecked on page load
+  window.onload = function() {
+    document.getElementById('terms-approval').checked = false;
+    document.getElementById("message").textContent = ''
+  };
+
   // Tambahkan event listener untuk menangani form submit
   document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -34,10 +56,14 @@
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const phone = document.getElementById('phone').value;
-    const address = document.getElementById('address').value;
     const password = document.getElementById('password').value;
     const passwordConf = document.getElementById('password-confirmation').value;
-
+    const foundName = document.getElementById('foundation-name').value;
+    const foundLicense = document.getElementById('foundation-license').value;
+    const foundAddress = document.getElementById('foundation-address').value;
+    const approval = document.getElementById('terms-approval').checked;
+    
+    console.log(approval)
     msg.textContent = "";
 
     if (password !== passwordConf) {
@@ -46,7 +72,7 @@
     }
 
     if (!username || !phone || !email || !password) {
-      document.getElementById("message").textContent = "nama pengguna, nomor handphone, email, dan password harus diisi!";
+      document.getElementById("message").textContent = "nama pengguna, nama instansi, no izin yayasan, alamat, email, nomor handphone, dan password harus diisi!";
       return;
     }
 
@@ -60,7 +86,8 @@
     try {
       // Kirim data ke API menggunakan Axios
       const response = await axios.post('/api/users/register', {
-        username, phone, email, password, role:"user", address
+        username, phone, email, password, role:"user",
+        foundAddress, foundName, foundLicense, approval
       });
       // Jika respon sukses
       Swal.fire({
@@ -71,8 +98,9 @@
         window.location.href = '/login'; // Arahkan ke login page
       });
     } catch (error) {
-      document.getElementById('email').value = null
-      document.getElementById('password').value = null
+      console.log(error)
+      // document.getElementById('email').value = null
+      // document.getElementById('password').value = null
       // Tangani error dari server
       if (error.response) {
         Swal.fire({
